@@ -1,55 +1,5 @@
 """
-SparkLabs Engine - Hot Reload Watcher
-
-A file-system watching engine that monitors assets, scripts, scenes and
-shaders for changes and notifies subscribed consumers so the running
-editor / runtime can hot-reload without a full restart. The watcher
-keeps an in-memory record of every change it observes, debounces
-related events into ``ChangeBatch`` groups, and plans ``ReloadAction``
-operations against the interested ``Subscriber`` entities.
-
-Architecture:
-  HotReloadWatcherEngine (singleton)
-    |-- WatchTarget        -- a directory or file being watched
-    |-- FileChange         -- a single detected change event
-    |-- ChangeBatch        -- a debounced collection of FileChange events
-    |-- Subscriber         -- an entity subscribed to a subset of changes
-    |-- ReloadAction       -- a planned reload operation
-    |-- ReloadHistory      -- historical record of completed reloads
-    |-- WatchFilter        -- a glob/regex include/exclude filter
-    |-- ReloadStats        -- aggregate counters
-    |-- HotReloadSnapshot  -- full state snapshot
-    |-- HotReloadEvent     -- lifecycle audit event
-    |-- ChangeKind         -- 5 file change kinds
-    |-- FileType           -- 8 supported file types
-    |-- ReloadStrategy     -- 5 reload timing strategies
-    |-- SubscriberKind     -- 5 consumer classifications
-    |-- ReloadStatus       -- 5 reload lifecycle states
-    |-- HotReloadEventKind -- 7 audit event kinds
-
-Core Capabilities:
-  - add_watch / remove_watch / list_watches: target registry with FIFO
-    eviction, file-type and recursive flags.
-  - subscribe / unsubscribe / list_subscribers: subscription registry
-    with paths/kinds/strategy configuration.
-  - record_change / batch_changes / process_batch: change ingestion,
-    debounced batching and processing pipeline that emits ReloadAction
-    objects for every interested subscriber.
-  - trigger_reload / complete_reload / get_reload_history /
-    get_pending_actions: per-path and per-batch reload orchestration.
-  - set_debounce / add_filter / remove_filter: runtime tuning of the
-    watcher.
-  - simulate_event: test hook that injects a synthetic file change
-    without touching the file system.
-  - list_events / get_status / get_snapshot: observability.
-  - reset: clear all stores and re-seed with default data.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`HotReloadWatcherEngine.get_instance` or the module-level
-:func:`get_hot_reload_watcher` factory. All public methods are guarded
-by the re-entrant lock.
-"""
+SparkLabs Engine - Hot Reload Watcher"""
 
 from __future__ import annotations
 
@@ -123,7 +73,7 @@ def _classify_file_type(path: str) -> "FileType":
     lowered = path.lower()
     if lowered.endswith((".py", ".lua", ".js", ".ts", ".cs", ".gd")):
         return FileType.SCRIPT
-    if lowered.endswith((".scene", ".tscn", ".scn", ".unity", ".umap")):
+    if lowered.endswith((".scene", ".scn")):
         return FileType.SCENE
     if lowered.endswith((".glsl", ".vert", ".frag", ".shader", ".hlsl")):
         return FileType.SHADER

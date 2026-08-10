@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Inventory & Equipment System
-
-A unified inventory and equipment system for the SparkLabs AI-native
-game engine. It models slot-based inventories, weighted containers,
-equipment loadouts, item stacking, nested containers, and gear sets.
-The system tracks every item lifecycle event from acquisition through
-use, repair, and disposal, enabling rich RPG and survival gameplay.
-
-Architecture:
-  InventorySystem (singleton)
-    |-- ItemDefinition, InventoryItem, InventorySlot, EquipmentSlot,
-       Loadout, Container, InventoryStats, InventorySnapshot,
-       InventoryEvent
-    |-- ItemRarity, ItemCategory, EquipmentSlotType, ItemBinding,
-       InventoryEventKind
-
-Core Capabilities:
-  - register_item / get_item / list_items / update_item / remove_item:
-    item definition lifecycle with rarity, category, weight, and tags.
-  - create_container / get_container / list_containers / delete_container:
-    container lifecycle with capacity, weight limit, and slot grid.
-  - add_item_to_container / remove_item_from_container / move_item:
-    item placement with stacking, weight enforcement, and slot rules.
-  - equip_item / unequip_item / get_equipped / swap_equipment: equipment
-    slot management with binding and stat aggregation hooks.
-  - create_loadout / get_loadout / apply_loadout / list_loadouts: gear
-    set presets for rapid equipment switching.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`InventorySystem.get_instance` or the module-level
-:func:`get_inventory_system` factory.
-"""
+SparkLabs Engine - Inventory & Equipment System"""
 
 from __future__ import annotations
 

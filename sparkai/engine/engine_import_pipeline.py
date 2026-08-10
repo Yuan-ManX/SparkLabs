@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Asset Import Pipeline
-
-Converts source assets (images, 3D models, audio, fonts, level data) into
-optimized engine-native formats. Supports format detection, automated
-optimization, metadata extraction, and batch processing with import
-profiles for consistent asset workflows across projects.
-
-Architecture:
-  ImportPipeline
-    |-- ImportTask (trackable import job with status and timing)
-    |-- ImportProcessor (format-specific converter with settings)
-    |-- ImportProfile (named configuration for batch processing)
-    |-- ImportedAsset (engine-ready output with checksums and metadata)
-
-Pipeline Features:
-  - DETECT: automatic asset type and format identification from extensions
-  - CONVERT: format conversion through registered processors
-  - OPTIMIZE: quality-versus-size optimization with configurable targets
-  - BATCH: recursive directory imports with filtering and profiles
-  - WATCH: filesystem monitoring for auto-import on change
-  - DERIVED: mipmap, LOD, and compressed variant generation
-  - TRACK: full import history with timing and size deltas
-"""
+SparkLabs Engine - Asset Import Pipeline"""
 
 from __future__ import annotations
 

@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Holographic Scene Composer
-
-The EngineHolographicSceneComposer projects game scenes as multi-layer
-holographic overlays, where each layer represents a different semantic
-aspect of the scene. Unlike traditional render passes that only handle
-visual data, the composer blends physical, emotional, narrative, and
-strategic layers into a unified scene experience.
-
-Each layer vibrates at its own frequency and has its own coherence.
-The composer can focus on one layer (making it dominant), blend multiple
-layers, or refract them (allowing one layer to bend and influence
-another). This creates emergent scene qualities: a battle scene where
-the emotional layer dominates feels different from one where the
-strategic layer dominates, even if the physical layout is identical.
-
-When layers are in harmony, the scene achieves "holographic coherence"
-- a state where all aspects reinforce each other. When layers conflict,
-the scene becomes "refracted" - creating tension and dissonance that
-can be used for dramatic effect.
-
-Architecture:
-  PROJECT   ->  FOCUS      ->  BLEND      ->  REFRACT     ->  RESOLVE
-  (register    (set the      (merge        (let layers       (produce
-   semantic    dominant      multiple      cross-              the final
-   layers)     layer and     layers into   contaminate        scene
-               suppress      a unified     and bend each      output
-               others)       field)        other)             with
-                                                              coherence
-                                                              score)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Holographic Scene Composer"""
 
 from __future__ import annotations
 

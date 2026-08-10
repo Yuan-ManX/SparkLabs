@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Hitbox System
-
-A combat hitbox/hurtbox runtime for the SparkLabs AI-native game engine.
-Hitboxes are active attack volumes that deal damage when they overlap
-hurtboxes. Hurtboxes are vulnerable body volumes that receive hits. This
-system is distinct from the general physics collision system: it operates
-on frame-based activation windows, limb damage multipliers, invulnerability
-frames, and team filtering — the precise data structures that melee and
-projectile combat games require.
-
-Architecture:
-  HitboxSystem (singleton)
-    |-- HitboxInstance, HurtboxInstance, LimbProfile,
-       HitboxStats, HitboxSnapshot, HitboxEvent
-    |-- HitboxShape, HitboxGroup, HitboxStatus, HitboxEventKind
-
-Core Capabilities:
-  - register_hitbox / get_hitbox / list_hitboxes / remove_hitbox /
-    activate_hitbox / deactivate_hitbox: attack volume lifecycle with
-    frame-based activation windows.
-  - register_hurtbox / get_hurtbox / list_hurtboxes / remove_hurtbox:
-    vulnerable body volume lifecycle with limb multipliers.
-  - register_limb / get_limb / list_limbs / remove_limb: limb damage
-    profiles with multipliers and critical flags.
-  - set_invulnerability: set invulnerability window for an owner.
-  - query_hits: check active hitboxes against hurtboxes, returning hit
-    results with limb multipliers and team filtering.
-  - tick: advance the frame counter, expire finished hitboxes.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`HitboxSystem.get_instance` or the module-level
-:func:`get_hitbox_system` factory.
-"""
+SparkLabs Engine - Hitbox System"""
 
 from __future__ import annotations
 

@@ -1,49 +1,5 @@
 """
-SparkLabs Engine - HUD (Heads-Up Display) Coordinator System
-
-A comprehensive HUD coordination system for the SparkLabs AI-native game
-engine. The HUD system orchestrates the lifecycle and presentation of all
-in-game overlay widgets: health bars, mana bars, stamina bars, experience
-bars, cast bars, resource bars, minimaps, tooltips, objective trackers,
-combo meters, buff/debuff bars, score displays, timers, ammo counters,
-expanded minimaps, notification toasts, crosshairs, interaction prompts,
-and dialogue boxes.
-
-Architecture:
-  HUDSystemEngine (singleton)
-    |-- HUDWidget          -- a single HUD widget instance (bar, toast, etc.)
-    |-- MinimapConfig      -- per-player minimap configuration and entities
-    |-- ObjectiveEntry     -- a tracked quest/objective with progress
-    |-- NotificationToast  -- a transient notification message
-    |-- HUDProfile         -- a saved HUD layout profile (widgets + minimap)
-    |-- HUDStats           -- aggregate counters describing HUD state
-    |-- HUDSnapshot        -- immutable state snapshot
-    |-- HUDEvent           -- audit log entry
-    |-- WidgetType         -- 20 widget classifications
-    |-- WidgetAnchor       -- 9 anchor positions on screen
-    |-- WidgetState        -- 6 widget visibility/lifecycle states
-    |-- MinimapMode        -- 4 minimap rendering modes
-    |-- ObjectiveStatus    -- 5 objective lifecycle states
-    |-- NotificationPriority -- 4 notification priority levels
-    |-- HUDEventKind       -- 10 audit event kinds
-
-Core Capabilities:
-  - create_widget / list_widgets / get_widget / update_widget / remove_widget:
-    widget registry with flexible field updates and FIFO eviction.
-  - set_widget_state: transition a widget between visibility states.
-  - create_minimap / get_minimap / get_minimap_by_player / update_minimap:
-    minimap configuration management.
-  - add_minimap_entity / remove_minimap_entity: per-minimap entity tracking.
-  - add_objective / list_objectives / get_objective: objective registry.
-  - update_objective_progress: advance progress with auto-complete logic.
-  - set_objective_status: transition objective lifecycle states.
-  - queue_notification / list_notifications / dismiss_notification:
-    transient notification toasts with expiry and priority.
-  - create_profile / list_profiles / get_profile / apply_profile:
-    saved HUD layout profiles.
-  - list_events / get_stats / get_status / get_snapshot: observability.
-  - reset: clear all stores and re-seed with default data.
-"""
+SparkLabs Engine - HUD (Heads-Up Display) Coordinator System"""
 
 from __future__ import annotations
 

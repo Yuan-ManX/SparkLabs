@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - Level Streaming System
-
-A spatial level streaming system that partitions game worlds into cells,
-manages asynchronous loading and unloading of level data, controls
-detail level transitions, and predicts player movement for preemptive
-content loading.
-
-Architecture:
-  LevelStreamingEngine (Singleton)
-    |-- StreamingCell         — spatial partition of level data
-    |-- CellLoader            — async loading/unloading orchestration
-    |-- LODController         — detail level management per cell
-    |-- StreamingPriorityQueue — load/unload prioritization
-    |-- PreloadPredictor      — movement-based predictive loading
-
-Streaming Pipeline:
-  1. World partitioned into grid of StreamingCells
-  2. Player position determines active cell radius
-  3. Cells within radius are prioritized for loading
-  4. LODController selects appropriate detail level
-  5. CellLoader asynchronously loads/unloads cell data
-  6. PreloadPredictor prefetches cells in movement direction
-  7. StreamingPriorityQueue schedules load operations
-
-Usage:
-    engine = get_level_streaming_engine()
-    engine.initialize_streaming_grid(world_size=(10000, 10000), cell_size=(500, 500))
-    engine.set_viewer_position(1500.0, 2300.0)
-    engine.update(delta_time)
-"""
+SparkLabs Engine - Level Streaming System"""
 
 from __future__ import annotations
 

@@ -1,53 +1,5 @@
 """
-SparkLabs Engine - HTN Planner System
-
-Hierarchical Task Network (HTN) planner for AI decision-making inside the
-SparkLabs AI-native game engine. The system lets designers register HTN
-domains that describe how high-level compound tasks break down into
-primitive actions through prioritized methods guarded by world-state
-preconditions. At runtime the planner decomposes a root task into a
-concrete sequence of primitive steps, then executes those steps one at a
-time while applying their effects back onto the live world state.
-
-Architecture:
-  HTNPlannerSystem (singleton)
-    |-- TaskType, TaskStatus, MethodStatus, OperatorType,
-       ConditionType, PlanStatus, DomainStatus, HTNEventKind
-    |-- WorldStateVariable, WorldState, Condition, Operator,
-       PrimitiveTask, Method, CompoundTask, PlanStep, Plan,
-       Domain, HTNConfig, HTNStats, HTNSnapshot, HTNEvent
-    |-- get_htn_planner_system
-
-Core Capabilities:
-  - register_domain / remove_domain / get_domain / list_domains
-  - register_primitive_task / register_compound_task / remove_task /
-    get_task / list_tasks
-  - add_method / remove_method / list_methods
-  - init_world_state / get_world_state / set_world_state_variable /
-    get_world_state_variable / check_condition / apply_operator
-  - decompose_task / find_satisfied_method / build_plan / replan
-  - start_plan / pause_plan / resume_plan / cancel_plan /
-    advance_plan / execute_step
-  - get_plan / list_plans / get_plan_status / get_plan_steps
-  - tick / get_status / get_stats / get_snapshot / get_config /
-    set_config / list_events
-
-HTN Algorithm:
-  Decomposition starts at a root task and proceeds recursively. For a
-  compound task the planner selects the first method (in priority order)
-  whose preconditions are satisfied by the working world state, then
-  decomposes each of that method's subtasks in sequence. For a primitive
-  task the planner verifies the preconditions, appends a plan step, and
-  applies the task's effects to the working world state so that later
-  tasks observe the updated state. The working state is a deep copy of
-  the live world state, so planning never mutates the actual game state
-  until a step is executed.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`HTNPlannerSystem.get_instance` or the module-level
-:func:`get_htn_planner_system` factory.
-"""
+SparkLabs Engine - HTN Planner System"""
 
 from __future__ import annotations
 

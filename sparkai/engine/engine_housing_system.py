@@ -1,47 +1,5 @@
 """
-SparkLabs Engine - Housing System
-
-A player housing and base building system for the SparkLabs AI-native game
-engine. Manages player-owned plots, furniture placement, room customization,
-visitor permissions, and housing templates. Supports grid-based and free-form
-placement, furniture categories, storage capacity, lighting, and social
-features (inviting visitors, sharing templates).
-
-Each plot is a rectangular region in world space that a player owns. Furniture
-items are placed within plots at specific positions, rotations, and scales.
-The system tracks placement validity (grid occupancy, collision, boundary),
-furniture categories (decor, furniture, lighting, storage, interactive),
-and visitor access permissions.
-
-Architecture:
-  HousingSystem (singleton)
-    |-- HousingState, FurnitureCategory, PlotPermission, HousingEventKind
-    |-- FurnitureItem, FurniturePlacement, HousingPlot, VisitorPass,
-       HousingTemplate, HousingConfig, HousingStats, HousingSnapshot,
-       HousingEvent
-    |-- get_housing_system
-
-Core Capabilities:
-  - register_plot / remove_plot / get_plot / list_plots: manage player-owned
-    housing plots.
-  - register_furniture / remove_furniture / get_furniture / list_furniture:
-    manage the furniture catalog.
-  - place_furniture / remove_placement / move_placement / rotate_placement:
-    position furniture within plots with collision and boundary checks.
-  - set_permission / get_permission: control visitor access to plots.
-  - invite_visitor / revoke_visitor / list_visitors: manage visitor passes.
-  - save_template / load_template / list_templates: persist and restore plot
-    layouts as reusable templates.
-  - tick: advance regen, capacity, and time-based features.
-  - set_config / get_config: global tuning for max plots, furniture, etc.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`HousingSystem.get_instance` or the module-level
-:func:`get_housing_system` factory.
-"""
+SparkLabs Engine - Housing System"""
 
 from __future__ import annotations
 

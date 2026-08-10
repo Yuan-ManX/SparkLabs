@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Leaderboard, Scoring, and Ranking System
-
-A comprehensive leaderboard, scoring, and ranking system for the SparkLabs
-AI-native game engine. Players submit scores to leaderboards, compete for
-top positions on ranked leaderboards, and participate in ranked seasons
-with tier progression (Bronze through Legend).
-
-Architecture:
-  LeaderboardSystemEngine (singleton)
-    |-- Leaderboard          — leaderboard definition with scope and sort order
-    |-- LeaderboardEntry     — per-player entry with rank and submission stats
-    |-- ScoreRecord          — atomic validated score submission
-    |-- RankingSeason        — time-boxed ranked season lifecycle
-    |-- PlayerRank           — per-player tier and ranking within a season
-    |-- LeaderboardStats     — aggregate counters
-    |-- LeaderboardSnapshot  — immutable state snapshot
-    |-- LeaderboardEvent     — audit log entry
-    |-- ScoreType            — 10 score classifications
-    |-- SortOrder            — ascending / descending ranking direction
-    |-- LeaderboardScope     — 5 leaderboard audience scopes
-    |-- SeasonStatus         — 3 season lifecycle states
-    |-- RankTier             — 8 competitive tiers
-    |-- LeaderboardEventKind — 8 audit event kinds
-
-Core Capabilities:
-  - create_leaderboard / list_leaderboards / get_leaderboard: leaderboard registry
-  - submit_score: record a score, update the player entry, recompute ranks
-  - get_entry / list_entries / get_rank / get_top_entries / get_neighbors: ranking queries
-  - create_season / list_seasons / get_season / start_season / end_season: season lifecycle
-  - assign_tier / list_player_ranks / get_player_rank: tier assignment per season
-  - get_stats / get_status / get_snapshot / list_events: observability
-  - reset: clear all stores and re-seed with default data
-"""
+SparkLabs Engine - Leaderboard, Scoring, and Ranking System"""
 
 from __future__ import annotations
 

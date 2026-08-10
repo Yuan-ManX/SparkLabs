@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Hot Reload System
-
-Hot reload system for scripts, scenes, and resources. Watches paths for
-modifications, dispatches registered callbacks when targets change, and
-records a reload history with success/failure status and timing.
-
-Architecture:
-  HotReloadSystem (Singleton)
-    |-- ReloadType    (categories of reloadable targets)
-    |-- ReloadEvent   (a record of a single reload attempt)
-    |-- WatchEntry    (a single watched path/target)
-    |-- HotReloadSnapshot (immutable snapshot of system state)
-
-Lifecycle:
-  1. watch(path, reload_type, callback) -> WatchEntry
-  2. unwatch(watch_id) -> bool
-  3. reload(path) -> ReloadEvent
-  4. reload_all(reload_type) -> List[ReloadEvent]
-  5. get_snapshot() -> HotReloadSnapshot
-  6. reset() -> None
-
-Usage:
-    system = get_hot_reload_system()
-    system.watch("scripts/player.py", ReloadType.SCRIPT, on_reload)
-    event = system.reload("scripts/player.py")
-    print(event.to_dict())
-"""
+SparkLabs Engine - Hot Reload System"""
 
 from __future__ import annotations
 

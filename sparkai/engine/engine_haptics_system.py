@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Haptics & Force Feedback System
-
-Manages gamepad rumble, vibration patterns, and force feedback envelopes
-for the SparkLabs game engine. Patterns are composed of one or more
-haptic layers, each targeting a specific motor (low-frequency rumble,
-high-frequency vibration, or adaptive triggers) with a temporal shape
-and optional amplitude envelope. Devices advertise their capabilities
-so the system can skip unsupported layers automatically. Named events
-bind a pattern to a priority, target device, intensity scale, and
-cooldown, letting gameplay code trigger feedback by intent rather than
-by raw motor parameters.
-
-Architecture:
-  HapticsSystem (singleton)
-    |-- HapticPattern, HapticLayer, HapticEvent, DeviceProfile,
-    |   HapticEnvelope, ActiveRumble, HapticsStats, HapticsSnapshot,
-    |   HapticsLogEvent
-    |-- RumbleMotor, HapticIntensity, HapticShape, DeviceType,
-        HapticPriority, HapticEventKind
-
-Core Capabilities:
-  - register_pattern / update_pattern / get_pattern / list_patterns /
-    delete_pattern: haptic pattern catalog with layered motors,
-    shapes, and envelopes.
-  - play_pattern / stop_pattern / stop_all: start and stop rumble
-    instances with per-device capability checks and priority-based
-    preemption.
-  - register_device / get_device / list_devices / set_device_enabled:
-    device profile management with motor and HD-haptic capabilities.
-  - create_event / trigger_event: named gameplay events that resolve
-    to a pattern with priority, intensity scale, and cooldown.
-  - list_active / list_events_log / get_stats / get_status /
-    get_snapshot / reset: observability and lifecycle management.
-"""
+SparkLabs Engine - Haptics & Force Feedback System"""
 
 from __future__ import annotations
 

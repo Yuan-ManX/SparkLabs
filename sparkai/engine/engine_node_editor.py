@@ -1,19 +1,5 @@
 """
-SparkLabs Engine Node Editor
-
-Provides a visual node-based editing system for game logic composition.
-Nodes can be connected to form complex behaviors, event chains, and
-gameplay systems without writing code. Supports real-time preview
-and hot-reloading of node graphs.
-
-Core architecture:
-  - Node Graph: Directed graph of interconnected nodes
-  - Node Types: Input, output, condition, action, variable, event
-  - Connection System: Type-safe connections between node ports
-  - Graph Execution: Topological execution of node graphs
-  - Serialization: JSON-based graph persistence
-  - Template System: Reusable node graph templates
-"""
+SparkLabs Engine Node Editor"""
 
 import threading
 import time
