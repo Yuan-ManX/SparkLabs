@@ -1,56 +1,5 @@
 """
-SparkLabs Engine - Cutscene Player
-
-Cinematic cutscene playback system for the SparkLabs game engine. The
-player orchestrates timeline tracks, camera sequences, subtitle sync,
-actor blocking, audio cues and effect triggers across one or more
-cutscenes. Each cutscene is modeled as a collection of timeline tracks
-that hold ordered clips; clips in turn hold camera keyframes, subtitle
-entries, actor cues and audio cues that fire at specific offsets within
-the clip.
-
-Architecture:
-  CutscenePlayer (singleton)
-    |-- CutsceneAsset         (top-level cutscene definition)
-    |-- TimelineTrack         (ordered layer inside a cutscene)
-    |-- TimelineClip          (time-bounded segment on a track)
-    |-- CameraKeyframe        (camera position / rotation / fov sample)
-    |-- SubtitleEntry         (timed caption with speaker and styling)
-    |-- ActorCue              (actor action with target transform)
-    |-- AudioCue              (sound playback with mixing parameters)
-    |-- PlaybackCheckpoint    (named seek target inside a cutscene)
-    |-- CutscenePlayerStats   (aggregate counters)
-    |-- CutscenePlayerSnapshot (immutable point-in-time capture)
-    |-- CutscenePlayerEvent   (audit log entry)
-
-Core Capabilities:
-  - load_cutscene / unload_cutscene / update_cutscene: lifecycle for
-    cutscene assets, with priority and loop-mode metadata.
-  - add_track / update_track / remove_track: timeline layer management
-    with sort ordering, lock and enable flags.
-  - add_clip / update_clip / remove_clip: segment management with
-    blend in/out, offsets and arbitrary properties.
-  - add_camera_keyframe / list_camera_keyframes: cinematic camera path
-    sampling with per-axis position, rotation, fov and interpolation.
-  - add_subtitle / get_subtitle / list_subtitles: timed caption sync
-    with speaker, language, font size, color and screen position.
-  - add_actor_cue / list_actor_cues: actor blocking with action name,
-    parameters and target transform plus blend time.
-  - add_audio_cue / list_audio_cues: sound cues with volume, pitch,
-    loop flag, fade ramps and spatial position.
-  - play / pause / resume / stop / seek / get_playback_state: playback
-    transport control with per-cutscene state tracking.
-  - add_checkpoint / get_checkpoint / list_checkpoints: named seek
-    targets that can be flagged as skippable.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability, serialization and lifecycle reset.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``. A class-level ``_inner_lock`` guards both
-singleton creation and one-time initialization; an instance-level
-``_lock`` guards every public method body. Consumers should obtain the
-instance through :func:`get_cutscene_player`.
-"""
+SparkLabs Engine - Cutscene Player"""
 
 from __future__ import annotations
 

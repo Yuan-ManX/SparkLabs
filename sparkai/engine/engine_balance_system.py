@@ -1,45 +1,5 @@
 """
-SparkLabs Engine - Balance System
-
-Provides engine-level game balance analysis, parameter tuning, and
-automated adjustment recommendations. Tracks win/loss outcomes, item
-usage statistics, and player-skill distributions to detect imbalances
-and propose data-driven corrections.
-
-Architecture:
-  BalanceSystem (singleton)
-    |-- BalanceParameter, BalanceMetric, WinLossRecord, ItemUsageRecord,
-    |   BalanceRule, BalanceAdjustment, BalanceAnalysis, BalanceReport,
-    |   BalanceSnapshot, BalanceEvent
-    |-- ParameterCategory, AdjustmentStatus, RuleOperator, RuleAction,
-        AnalysisVerdict, BalanceEventKind
-
-Core Capabilities:
-  - register_parameter / update_parameter / get_parameter / list_parameters:
-    manage tunable game parameters organized by category.
-  - record_match / record_item_usage: capture gameplay outcome and item
-    telemetry that feeds the balance analysis pipeline.
-  - get_win_rate / get_usage_stats: aggregate query helpers.
-  - analyze_balance: run the full analysis pipeline, producing a
-    BalanceAnalysis with verdicts (BALANCED / FAVORS_PLAYER / FAVORS_ENEMY /
-    TOO_EASY / TOO_HARD) for each parameter and matchup.
-  - propose_adjustment / apply_adjustment / revert_adjustment: manage the
-    lifecycle of balance changes, including A/B experiment linking.
-  - create_rule / update_rule / delete_rule / list_rules /
-    evaluate_rules: declarative auto-tuning rules that fire when metrics
-    cross thresholds.
-  - auto_tune: evaluate all rules and apply matching adjustments.
-  - generate_report: produce a comprehensive BalanceReport suitable for
-    designers and the AI critic agent.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and lifecycle management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`BalanceSystem.get_instance` or the module-level
-:func:`get_balance_system` factory. All public methods are guarded by
-the re-entrant lock.
-"""
+SparkLabs Engine - Balance System"""
 
 from __future__ import annotations
 

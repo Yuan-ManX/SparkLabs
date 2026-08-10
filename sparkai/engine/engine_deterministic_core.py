@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Deterministic Simulation Core
-
-A lockstep deterministic simulation framework that ensures identical
-game state across all clients in multiplayer sessions. The deterministic
-core provides frame-accurate state hashing, input synchronization,
-rollback netcode support, and state comparison utilities -- forming the
-foundation for reliable multiplayer gameplay in the SparkLabs engine.
-
-Architecture:
-  EngineDeterministicCore (Singleton)
-    |-- SimFrame (per-frame state snapshot)
-    |-- InputQueue (synchronized input buffer)
-    |-- StateHashTree (Merkle-style state verification)
-    |-- RollbackStack (speculative execution with rollback)
-    |-- SyncValidator (cross-client state comparison)
-    |-- ReplayRecorder (deterministic replay recording)
-
-Core Capabilities:
-  - Lockstep frame execution with input synchronization
-  - Merkle-style state hashing for integrity verification
-  - Speculative execution with rollback support
-  - Deterministic replay recording and playback
-  - Cross-client state comparison and desync detection
-  - Frame-advance with input prediction for latency hiding
-"""
+SparkLabs Engine - Deterministic Simulation Core"""
 
 from __future__ import annotations
 

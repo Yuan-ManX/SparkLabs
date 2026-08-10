@@ -2,68 +2,7 @@
 
 Provides procedural audio generation, spatial 3D audio positioning,
 dynamic music layering, audio bus routing, and AI-driven sound effect
-synthesis for immersive game audio.
-
-Architecture:
-  AudioSfxSystem (singleton)
-    |-- AudioBusChannel, AudioDistanceModel, AudioEventKind, AudioFormat,
-       AudioLoopMode, AudioPriority, AudioStatus, AudioType, WaveformType
-    |-- AudioBus, AudioEmitter, AudioListener, AudioClip, AudioSource,
-       MusicLayer, MusicTrack, AudioEffect, AudioReverbZone, AudioConfig,
-       AudioStats, AudioSnapshot, AudioEvent
-    |-- get_audio_sfx_system
-
-Core Capabilities:
-  - register_bus / remove_bus / get_bus / list_buses / set_bus_volume /
-    mute_bus / solo_bus: audio bus routing with per-channel volume, mute,
-    and solo plus a chain of effects applied to each bus.
-  - register_emitter / remove_emitter / get_emitter / list_emitters:
-    positional sound emitters carrying 3D position, velocity, distance
-    model, and spatial blend for immersive placement.
-  - register_listener / remove_listener / get_listener / list_listeners /
-    update_listener_position: listener tracking used by the spatializer
-    to compute attenuation, panning, and doppler shift.
-  - register_clip / remove_clip / get_clip / list_clips: audio clip
-    catalog holding format, sample rate, channel count, duration, and
-    raw sample data for procedural playback.
-  - create_source / remove_source / get_source / list_sources /
-    play_source / pause_source / stop_source / set_source_volume /
-    set_source_pitch / set_source_pan: full source lifecycle with fade
-    in/out, loop modes, priority, and live parameter control.
-  - create_music_track / remove_music_track / get_music_track /
-    list_music_tracks / add_music_layer / remove_music_layer /
-    play_music_track / stop_music_track / set_music_layer_volume /
-    transition_music_layer: dynamic music layering with smooth layer
-    transitions driven by gameplay conditions.
-  - register_effect / remove_effect / get_effect / list_effects /
-    add_effect_to_bus / remove_effect_from_bus: insertable DSP effects
-    (reverb, echo, distortion, filters) attached to bus effect chains.
-  - register_reverb_zone / remove_reverb_zone / get_reverb_zone /
-    list_reverb_zones: spatial reverb zones that apply room size,
-    damping, wet/dry mix based on listener proximity.
-  - auto_generate_sfx: AI-driven procedural sound effect synthesis from
-    a natural-language description (explosion, laser, footstep, wind,
-    magic, ui click, and combinations thereof).
-  - generate_procedural_clip: deterministic waveform synthesis (sine,
-    square, saw, triangle, noise, pulse) at a target frequency,
-    duration, and sample rate.
-  - suggest_music_layer: AI-driven music layer suggestion based on the
-    current mood of the scene.
-  - optimize_mix: AI-driven mix analysis that returns a list of concrete
-    optimization suggestions for a given bus.
-  - analyze_audio_spectrum: frequency-domain analysis of a clip that
-    returns peak frequency, RMS level, spectral centroid, and band
-    energies.
-  - get_config / set_config / get_stats / get_snapshot / get_status /
-    list_events / tick / reset: observability, tuning, and lifecycle.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`AudioSfxSystem.get_instance` or the module-level
-:func:`get_audio_sfx_system` factory. All public methods are guarded by
-the re-entrant lock so concurrent calls from gameplay, render, and
-editor threads remain consistent.
-"""
+synthesis for immersive game audio."""
 
 import hashlib
 import math

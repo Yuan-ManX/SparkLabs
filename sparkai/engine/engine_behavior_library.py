@@ -1,47 +1,5 @@
 """
-SparkLabs Engine - Behavior Library
-
-Pre-built behavior/extension system providing modular, reusable
-behavior definitions that can be instantiated on game entities to add
-movement, combat, AI, physics, visual, and utility logic without
-writing custom code for each entity.
-
-Architecture:
-  BehaviorLibrary
-    |-- BehaviorDefinition (named, categorized behavior with typed parameters)
-    |-- BehaviorInstance (entity-bound instance with parameter overrides)
-    |-- BehaviorCategory (domain classification for discovery and filtering)
-    |-- Built-in Templates (13 curated behaviors for common game logic)
-
-Action Lists:
-  Each behavior definition carries three ordered action lists:
-    - init_actions: executed once when a behavior instance is first activated
-    - update_actions: executed every tick while the behavior is active
-    - cleanup_actions: executed when the behavior instance is deactivated
-
-Built-in Behavior Templates:
-  - PLATFORMER_CHARACTER (MOVEMENT)    : side-scrolling gravity and jump
-  - TOP_DOWN_MOVEMENT    (MOVEMENT)    : 8-directional free movement
-  - HEALTH_SYSTEM        (COMBAT)      : HP management with damage/heal/death
-  - PATHFINDING          (AI)          : A* path following with waypoints
-  - PROJECTILE_SPAWNER   (COMBAT)      : timed projectile creation
-  - FOLLOW_TARGET        (AI)          : chase behavior with speed control
-  - ROTATE_TOWARD        (VISUAL)      : auto-rotation toward target or direction
-  - FLOAT_BOB            (VISUAL)      : decorative sinusoidal vertical motion
-  - DAMAGE_ON_COLLISION  (COMBAT)      : apply damage when colliding
-  - DESTROY_AFTER_ANIMATION (VISUAL)   : self-destruct after animation completes
-  - TILEMAP_COLLIDER     (PHYSICS)     : tile-based collision detection
-  - GRID_SNAP            (UTILITY)     : snap position to a configurable grid
-  - SCREEN_WRAP          (UTILITY)     : wrap position around screen boundaries
-
-Usage:
-    lib = get_behavior_library()
-    lib.preload_builtins()
-    instance = lib.instantiate_behavior("platformer_character", "player_1",
-                                        {"speed": 300.0, "jump_force": 500.0})
-    lib.activate_behavior(instance.id)
-    lib.process_behavior(instance.id, 0.016)
-"""
+SparkLabs Engine - Behavior Library"""
 
 from __future__ import annotations
 

@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Edge-of-Chaos Stabilizer
-
-The EngineEdgeOfChaosStabilizer models how a living system holds itself
-at the boundary between rigid order and formless noise. Complexity
-flourishes neither in frozen stasis nor in dissolving chaos, but on the
-narrow edge between them - the edge of chaos, where information is rich
-enough to compute and flexible enough to evolve.
-
-Each observed system (an agent's behavior, a narrative arc, a combat
-exchange, a world simulation) has an entropy signature. The stabilizer
-senses that entropy, classifies it against the order-chaos spectrum,
-damps it when it grows too volatile, amplifies it when it grows too
-rigid, and recenters it on the edge where emergence is most likely.
-
-Architecture:
-  SENSE     ->  ENTROPY    ->  DAMP      ->  AMPLIFY   ->  RECENTER
-  (raw       (the entropy   (chaotic       (ordered      (the system is
-   signals   is classified  deviations     deviations    pulled back
-   are       on the order-  are damped     are amplified toward the
-   gathered) chaos          toward         toward        edge where
-             spectrum)      stability)     variation)    emergence
-                                            lives)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Edge-of-Chaos Stabilizer"""
 
 from __future__ import annotations
 

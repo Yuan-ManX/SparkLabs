@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Dynamical Systems Attractor
-
-The DynamicalSystemsAttractor models the game-world state space as a
-dynamical attractor landscape. Each registered landscape is a vector
-field over a set of named dimensions; embedded in the field are
-attractors (stable nodes, stable cycles, saddles, repellers, strange
-attractors) that pull the world state toward themselves. A perturbation
-nudges the state along a trajectory; the trajectory is traced under
-the field, the basin it is converging toward is identified, bifurcation
-thresholds are checked, and the state finally settles into a new
-equilibrium.
-
-By steering the world state toward or away from attractor basins the
-engine produces emergent narrative and world equilibria: stable
-attractors become enduring outcomes, bifurcation crossings become
-regime changes, and strange attractors become ongoing oscillations
-that never quite settle.
-
-Architecture:
-  PERTURB    ->  TRACE     ->  BASIN      ->  BIFURCATE  ->  SETTLE
-  (a pertur-   (the state    (which       (does the       (the state
-   bation is   traces a      attractor    trajectory      settles into
-   applied     trajectory    basin is     cross a         its new
-   to the      under the     identified)  bifurcation?)   equilibrium)
-   state)      field)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Dynamical Systems Attractor"""
 
 from __future__ import annotations
 

@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Engine Behavior System
-
-Unified AI behavior system providing behavior trees, finite state machines,
-and utility-based AI selection for game entities. Supports entity-level
-behavior assignment, composite tick execution, and runtime behavior
-orchestration.
-
-Architecture:
-  BehaviorEngine (Singleton)
-    |-- BehaviorTree (hierarchical node graph with tick evaluation)
-    |-- StateMachine (FSM with condition-based transitions)
-    |-- UtilityAI (score-based action selection)
-    |-- Entity Behavior Binding (per-entity behavior assignment)
-"""
+SparkLabs Engine - Engine Behavior System"""
 
 from __future__ import annotations
 

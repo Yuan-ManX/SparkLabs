@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - AI-Driven Audio Management System
-
-Runtime audio engine providing sound effect playback, music streaming,
-spatial audio positioning, and dynamic mixing. Manages audio assets
-through a priority-based pool with channel routing, voice stealing,
-and automatic fade transitions.
-
-Architecture:
-  AudioSystemEngine
-    |-- AssetRegistry — audio asset catalog with metadata and tags
-    |-- InstanceManager — active playback instance lifecycle tracking
-    |-- ChannelRouter — category-based audio channel routing
-    |-- MixerEngine — multi-channel mixing with effects and master volume
-    |-- Spatializer — 3D distance-based attenuation and stereo panning
-
-Audio Features:
-  - SFX: one-shot and looping sound effects with pitch/volume variation
-  - MUSIC: playlist streaming with smooth crossfade transitions
-  - SPATIAL: distance-based attenuation and stereo panning
-  - MIXING: master, music, sfx, voice, and ambient volume channels
-  - VOICE_STEALING: priority-based instance eviction when max channels reached
-"""
+SparkLabs Engine - AI-Driven Audio Management System"""
 
 from __future__ import annotations
 

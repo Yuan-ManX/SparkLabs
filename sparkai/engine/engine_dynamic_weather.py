@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Dynamic Weather System
-
-A comprehensive dynamic weather and atmosphere simulation system
-providing weather profiles, smooth transitions, localized weather
-zones, weather-driven particle systems, and atmospheric scattering
-calculations for the SparkLabs game engine.
-
-Architecture:
-  DynamicWeatherEngine (Singleton)
-    |-- WeatherProfile       — temperature, humidity, wind, precipitation
-    |-- WeatherTransition    — smooth interpolation between weather states
-    |-- WeatherZone          — localized weather effect region
-    |-- WeatherParticleSystem — rain/snow/fog particle simulation
-    |-- AtmosphereSimulator  — Rayleigh/Mie scattering computation
-
-Weather Pipeline:
-  1. WeatherProfile defines atmospheric parameters
-  2. WeatherTransition blends between profiles over time
-  3. WeatherZones apply localized weather overrides
-  4. WeatherParticleSystem renders visual effects
-  5. AtmosphereSimulator computes sky color and lighting
-
-Usage:
-    engine = get_dynamic_weather_engine()
-    engine.set_weather_profile(WeatherType.RAIN, intensity=0.7)
-    engine.create_weather_zone(center=(500, 200), radius=100.0)
-    engine.update(delta_time)
-"""
+SparkLabs Engine - Dynamic Weather System"""
 
 from __future__ import annotations
 

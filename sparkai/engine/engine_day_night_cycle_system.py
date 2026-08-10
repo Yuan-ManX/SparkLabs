@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Atmospheric Cycle System
-
-Manages astronomical time progression, sun and moon positioning, lighting
-transitions, weather modifiers, aurora effects, and time-based world
-triggers. Provides a unified clock that drives visual atmosphere changes
-and scheduled world events across the game engine.
-
-Architecture:
-  AtmosphericCycleSystem (singleton)
-    |-- AtmosphericPhase, CelestialBodyType, WeatherModifier, AtmosphericEventKind
-    |-- CelestialPosition, LightingProfile, TimeTrigger, ScheduledEvent,
-       AuroraInstance, AtmosphericCycleConfig, AtmosphericCycleStats,
-       AtmosphericCycleSnapshot, AtmosphericCycleEvent
-    |-- get_atmospheric_cycle_system
-
-Core Capabilities:
-  - register_phase / remove_phase / get_phase / list_phases
-  - register_lighting_profile / get_lighting_profile / list_lighting_profiles
-  - register_trigger / remove_trigger / get_trigger / list_triggers
-  - schedule_event / cancel_event / list_scheduled_events
-  - get_current_time / set_current_time / advance_time
-  - get_celestial_position / get_sun_position / get_moon_position
-  - get_current_lighting / get_active_auroras / spawn_aurora / dismiss_aurora
-  - register_weather_modifier / remove_weather_modifier
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`AtmosphericCycleSystem.get_instance` or the module-level
-:func:`get_atmospheric_cycle_system` factory.
-"""
+SparkLabs Engine - Atmospheric Cycle System"""
 
 from __future__ import annotations
 

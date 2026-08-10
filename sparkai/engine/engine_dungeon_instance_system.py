@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Dungeon Instance System
-
-Manages instanced dungeon encounters with difficulty scaling, party
-formation, boss encounters, lockout tracking, completion records, and
-reward distribution. Players form parties, enter dungeon instances,
-progress through wings and boss encounters, and earn completion-based
-rewards with weekly lockout timers.
-
-Architecture:
-  DungeonInstanceSystem (singleton)
-    |-- DungeonDifficulty, InstanceStatus, EncounterState, DungeonEventKind
-    |-- BossEncounter, DungeonWing, DungeonDefinition, PartyMember,
-       DungeonInstance, CompletionRecord, LockoutEntry, DungeonConfig,
-       DungeonStats, DungeonSnapshot, DungeonEvent
-    |-- get_dungeon_instance_system
-
-Core Capabilities:
-  - register_dungeon / remove_dungeon / get_dungeon / list_dungeons
-  - create_instance / destroy_instance / get_instance / list_instances
-  - add_party_member / remove_party_member / get_party
-  - start_instance / complete_instance / fail_instance
-  - start_encounter / complete_encounter / fail_encounter
-  - get_progress / get_encounter_state
-  - check_lockout / get_lockout / clear_lockout
-  - get_completion_record / list_completions
-  - calculate_difficulty / scale_encounter
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`DungeonInstanceSystem.get_instance` or the module-level
-:func:`get_dungeon_instance_system` factory.
-"""
+SparkLabs Engine - Dungeon Instance System"""
 
 from __future__ import annotations
 

@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Behavior Runtime
-
-Runtime execution system for AI behavior trees and finite state machines.
-Drives NPC logic, enemy AI, companion behavior, and environmental interactions
-through composable behavior nodes with condition evaluation and parallel execution.
-
-Architecture:
-  BehaviorRuntime
-    |-- TreeExecutor (traverses and evaluates behavior tree nodes)
-    |-- StateMachineRuntime (FSM transitions and state callbacks)
-    |-- Blackboard (shared data store for inter-node communication)
-    |-- ConditionEvaluator (composite condition checking with caching)
-    |-- ActionDispatcher (executes leaf actions with timing control)
-
-Node Types:
-  - SELECTOR: runs children until one succeeds (OR logic)
-  - SEQUENCE: runs children until one fails (AND logic)
-  - PARALLEL: runs all children concurrently with finish policies
-  - CONDITION: evaluates a predicate, succeeds or fails
-  - ACTION: performs a concrete behavior with duration
-  - DECORATOR: modifies child behavior (inverter, repeater, timer)
-"""
+SparkLabs Engine - Behavior Runtime"""
 
 from __future__ import annotations
 

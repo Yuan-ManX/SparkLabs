@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Ecosystem Dynamics Simulation System
-
-A population dynamics simulation engine modeling flora and fauna
-interactions including predator-prey relationships, carrying capacity,
-species migration, and seasonal effects. Uses a predator-prey
-model with logistic growth for producers, functional response predation
-for consumers, and seasonal modifiers on growth and carrying capacity.
-
-Architecture:
-  EcosystemDynamicsEngine (Singleton)
-    |-- SpeciesProfile      — definition of a species and its traits
-    |-- PopulationSnapshot  — per-tick population state record
-    |-- RegionEcosystem     — a geographic region with species populations
-    |-- MigrationEvent      — recorded migration between regions
-    |-- EcosystemReport     — summary metrics for a simulation tick
-
-Ecological Model:
-  - Producers: logistic growth toward carrying capacity (season-modified)
-  - Primary consumers: Holling Type II functional response on producers
-  - Secondary/Tertiary consumers: Predator-prey predation on lower trophic levels
-  - Decomposers: growth proportional to dead biomass (mortality)
-  - Migration: triggered by overpopulation, resource scarcity, or season
-  - Seasonal effects: growth rate and carrying capacity modifiers per season
-"""
+SparkLabs Engine - Ecosystem Dynamics Simulation System"""
 
 from __future__ import annotations
 

@@ -1,55 +1,5 @@
 """
-SparkLabs Engine - Destructible Structure System
-
-A real-time structural destruction runtime for the SparkLabs AI-native game
-engine. Structures are represented as node-edge meshes where each node carries
-mass and position and each edge carries strength, material, and stress state.
-The system simulates impact damage, explosive blasts, fracture propagation,
-progressive collapse, debris physics, and chain-reaction destruction across
-linked structures. An AI analysis layer evaluates weak points, tunes fracture
-parameters, predicts collapse scenarios, and generates controlled demolition
-plans.
-
-Architecture:
-  _DestructibleStructureSystem (singleton)
-    |-- MaterialType, FracturePattern, StructureStatus, DebrisStatus,
-       DestructibleEventKind
-    |-- MaterialProperties, StructureNode, StructureEdge, Structure,
-       FractureRecord, DebrisPiece, CollapseEvent, DestructibleConfig,
-       DestructibleStats, DestructibleSnapshot, DestructibleEvent
-    |-- get_destructible_structure_system
-
-Core Capabilities:
-  - register_structure / get_structure / remove_structure / list_structures:
-    structure lifecycle with node-edge meshes, position, and integrity.
-  - register_material_type / get_material_type / list_material_types /
-    remove_material_type: material definitions with yield stress and density.
-  - apply_damage / apply_explosive: impact and blast damage that propagates
-    stress through connected edges and creates fractures.
-  - create_fracture / propagate_fracture: explicit fracture creation and
-    chain-reaction propagation to neighboring edges.
-  - check_structural_integrity / compute_load_distribution / get_stress_map /
-    assess_damage: structural analysis of load paths and weak points.
-  - trigger_collapse / simulate_collapse: progressive collapse simulation
-    that breaks edges, displaces nodes, and spawns debris.
-  - register_debris / get_debris / list_debris / remove_debris / settle_debris
-    / compute_debris_pile: debris lifecycle with simple settling physics.
-  - ai_assess_vulnerability / ai_optimize_fracture / ai_predict_collapse /
-    ai_generate_destruction_plan: AI-driven analysis and tuning.
-  - get_node / get_edge / list_nodes / list_edges: mesh element access.
-  - get_fracture / list_fractures / get_collapse_event / list_collapse_events:
-    damage history inspection.
-  - reset_structure / repair_structure: structure recovery operations.
-  - get_deformation_summary / get_visualization_data: rendering helpers.
-  - get_status / get_stats / get_snapshot / get_config / set_config:
-    observability and configuration management.
-  - list_events / tick: event log and per-frame simulation step.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`_DestructibleStructureSystem.get_instance` or the module-level
-:func:`get_destructible_structure_system` factory.
-"""
+SparkLabs Engine - Destructible Structure System"""
 
 from __future__ import annotations
 

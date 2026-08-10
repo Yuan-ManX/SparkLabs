@@ -1,22 +1,5 @@
 """
-SparkLabs Engine - Audio Synthesis
-
-Procedural audio synthesis engine for the AI-native game engine.
-Generates sound effects, ambient textures, and musical elements
-programmatically through waveform synthesis, noise generation,
-and real-time audio processing.
-
-Architecture:
-  EngineAudioSynthesis
-    |-- OscillatorBank (multi-waveform tone generation)
-    |-- NoiseGenerator (white/pink/brown/Perlin noise)
-    |-- EnvelopeShaper (ADSR amplitude contouring)
-    |-- FilterChain (lowpass/highpass/bandpass/notch filtering)
-    |-- ModulationMatrix (LFO, FM, AM routing)
-    |-- EffectProcessor (reverb, delay, chorus, distortion)
-    |-- NoteSequencer (melodic/rhythmic pattern generation)
-    |-- SampleBuffer (waveform data storage and manipulation)
-"""
+SparkLabs Engine - Audio Synthesis"""
 
 from __future__ import annotations
 

@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Crowd Dynamics Simulation System
-
-A comprehensive crowd simulation engine for large-scale NPC behavior
-management. Provides flow field generation, density management, group
-dynamics, and multi-agent steering behaviors for realistic crowd
-movement in the AI-native game engine.
-
-Architecture:
-  EngineCrowdDynamics (Singleton)
-    |-- CrowdAgent        — individual NPC with position, velocity, goals
-    |-- CrowdGroup        — formation-based group of agents
-    |-- FlowField         — grid-based velocity vector field for crowd routing
-    |-- CrowdDensityRegion — high-density zone detection and tracking
-    |-- CrowdEvent        — perturbation events affecting crowd behavior
-    |-- SimulationFrame   — snapshot of the simulation state at a tick
-
-Steering Behaviors:
-  - Reynolds Flocking (cohesion, alignment, separation)
-  - Velocity Obstacle collision avoidance (RVO / ORCA-lite)
-  - Eikonal-based flow field generation via fast marching
-  - Gaussian kernel density estimation for heat maps
-  - Formation marching for coordinated group movement
-  - Event-driven crowd perturbation (panic, attraction, repulsion)
-"""
+SparkLabs Engine - Crowd Dynamics Simulation System"""
 
 from __future__ import annotations
 

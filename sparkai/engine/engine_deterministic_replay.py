@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Deterministic Replay
-
-Provides deterministic game replay recording and playback. Captures
-all input events, random seeds, and game state transitions frame-by-frame
-so that entire gameplay sessions can be exactly replayed. Useful for
-debugging, testing, and replay sharing.
-
-Architecture:
-  DeterministicReplay (singleton)
-    |-- Recording: frames + events + random seeds captured
-    |-- Snapshots: periodic full game-state captures for seeking
-    |-- Playback: replay recorded sessions at configurable speed
-    |-- Session management: list, query, delete recorded sessions
-
-Event Categories:
-  - INPUT: keyboard, mouse, gamepad, touch events
-  - PHYSICS_STEP: per-physics-tick determinism markers
-  - RANDOM_CALL: seed + parameters for random number generation
-  - AI_DECISION: agent decision output with input context hash
-  - NETWORK_EVENT: incoming packet data with timestamp
-  - SPAWN / DESTROY: entity lifecycle events
-  - STATE_SNAPSHOT: full or delta state capture
-  - CUSTOM: user-defined game-specific events
-
-Replay Flow:
-  1. start_recording(name, random_seed) begins a new session
-  2. record_event(frame_number, category, data) per-frame
-  3. capture_snapshot(...) periodically for seeking support
-  4. stop_recording() finalizes and stores the session
-  5. start_playback(session_id, speed) replays events frame-by-frame
-  6. seek_to_frame(session_id, frame) jumps to specific frame
-"""
+SparkLabs Engine - Deterministic Replay"""
 
 from __future__ import annotations
 

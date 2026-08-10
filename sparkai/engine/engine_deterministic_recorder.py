@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Deterministic Recorder
-
-A singleton deterministic gameplay recording and replay system
-for the SparkLabs game engine. Captures player inputs, random
-seeds, and system state snapshots to enable perfect replay,
-ghost playback, and debugging reconstruction.
-
-Architecture:
-  DeterministicRecorder (singleton)
-    |-- FrameInput (per-tick input capture: keys, mouse, gamepad)
-    |-- StateSnapshot (periodic full state for seek/reconstruction)
-    |-- RecordSession (container for a full recording run)
-    |-- ReplayController (active playback state machine)
-"""
+SparkLabs Engine - Deterministic Recorder"""
 
 from __future__ import annotations
 

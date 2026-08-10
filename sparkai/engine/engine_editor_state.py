@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Editor State Machine
-
-Centralized editor workflow state management for agent-driven editing
-sessions. Tracks active tools, selection context, viewport camera,
-and editing mode transitions. Provides agents with full awareness of
-the current editor environment.
-
-Architecture:
-  EditorStateMachine
-    |-- ToolRegistry (active tool tracking and switching)
-    |-- SelectionManager (entity/scene selection context)
-    |-- ViewportState (camera and rendering state)
-    |-- ModeController (edit/play/pause/step modes)
-    |-- ContextBroadcaster (state change notifications)
-
-Editor Modes:
-  - EDIT: full editing capabilities with agent assistance
-  - PLAY: runtime game preview with debugging
-  - PAUSE: frozen state for inspection
-  - STEP: frame-by-frame advancement
-  - SIMULATE: physics-only preview mode
-"""
+SparkLabs Engine - Editor State Machine"""
 
 from __future__ import annotations
 

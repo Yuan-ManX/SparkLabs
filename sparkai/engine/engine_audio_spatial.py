@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - AI-Driven Spatial Audio System
-
-Runtime spatial audio engine providing 3D sound source management,
-listener tracking, reverb zone simulation, occlusion calculation,
-Doppler effect processing, room acoustics simulation, and procedural
-audio synthesis. Manages audio sources through spatial positioning,
-distance-based attenuation curves, and real-time parameter modulation.
-
-Architecture:
-  EngineAudioSpatial
-    |-- SourceManager (audio source lifecycle and state management)
-    |-- ListenerTracker (listener position, orientation, and velocity)
-    |-- ReverbZoneSimulator (environmental reverb zone queries)
-    |-- OcclusionModel (ray-based obstruction between source and listener)
-    |-- DopplerProcessor (pitch shifting from relative velocity)
-    |-- ProceduralSynthesizer (runtime waveform generation)
-    |-- QualityController (sample rate and processing fidelity)
-
-Spatial Audio Features:
-  - SOURCES: point, ambient, music, voice, and UI sound emitters
-  - LISTENERS: 3D position, forward/up orientation, velocity
-  - REVERB: preset-based environmental reverb zones
-  - OCCLUSION: ray-based obstruction modeling between sources and listeners
-  - DOPPLER: frequency shift from relative source-listener velocity
-  - ROOM ACOUSTICS: wall material reflection and room dimension modeling
-  - PROCEDURAL: runtime waveform synthesis with ADSR envelopes and filtering
-"""
+SparkLabs Engine - AI-Driven Spatial Audio System"""
 
 from __future__ import annotations
 

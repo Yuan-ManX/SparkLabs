@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Deployment Orchestrator
-
-An AI-driven deployment orchestration system that handles cross-platform game
-building, packaging, optimization, and distribution for the AI-native game
-engine. Coordinates the full lifecycle from build configuration through
-compilation, asset optimization, packaging, signing, and deployment to
-distribution platforms.
-
-Architecture:
-  DeploymentOrchestrator (Singleton)
-    |-- BuildConfiguration (per-platform build settings)
-    |-- BuildJob (individual build pipeline execution)
-    |-- DeploymentTarget (distribution store/platform endpoint)
-    |-- TargetPlatform / BuildStatus / OptimizationLevel (enums)
-
-Capabilities:
-  - CREATE: define build configurations per target platform
-  - QUEUE: submit build jobs for individual or batch execution
-  - EXECUTE: simulate the full build pipeline (prepare, compile, package,
-    optimize, sign, complete)
-  - OPTIMIZE: simulate asset optimization (texture/audio compression,
-    code minification, deduplication, sprite atlas generation)
-  - PACKAGE: bundle game into platform-specific output formats
-  - DEPLOY: simulate deployment to distribution targets (Steam, Epic, etc.)
-  - ESTIMATE: predict build size and build time for a configuration
-  - MONITOR: track build status, progress, and aggregate statistics
-"""
+SparkLabs Engine - Deployment Orchestrator"""
 
 from __future__ import annotations
 

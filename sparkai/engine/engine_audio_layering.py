@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Audio Layering Engine
-
-Dynamic audio mix system providing crossfade transitions, priority-based
-ducking, and spatial positioning for real-time game audio layering.
-Manages audio layers through mix presets and rule-based volume modulation
-across music, ambient, SFX, UI, voice, and master channels.
-
-Architecture:
-  AudioLayeringEngine
-    |-- LayerRegistry (catalog of named audio layers with type and spatial data)
-    |-- PresetManager (mix presets storing layer volume configurations)
-    |-- RuleProcessor (source-target mix rules: duck, reduce, mute, crossfade, passthrough)
-    |-- EventScheduler (crossfade and ducking events with time-based interpolation)
-    |-- SpatialRouter (3D positional audio routing with stereo/surround/HRTF models)
-
-Audio Layering Features:
-  - CROSSFADE: smooth volume transition between two layers over time
-  - DUCKING: temporary volume reduction on a target when a trigger layer is active
-  - SPATIAL: per-layer 3D positioning with stereo panning and distance modeling
-  - PRESETS: named configurations of layer volumes for scene-specific mixing
-  - MASTER: global volume control affecting all downstream layers
-"""
+SparkLabs Engine - Audio Layering Engine"""
 
 from __future__ import annotations
 

@@ -1,19 +1,5 @@
 """
-SparkLabs Engine - Custom Object Type System
-
-Modular game object type system providing property definitions, behavior
-attachment, visual styling templates, and runtime instance creation. Types
-form a composable inheritance chain with overwrite, extend, and final
-locking modes for parent property sets and behaviors.
-
-Architecture:
-  CustomObjectTypeSystem
-    |-- ObjectTypeDefinition (named type with base classification and metadata)
-    |-- TypeProperty (typed properties with defaults, constraints, and UI hints)
-    |-- BehaviorAttachment (named behavior modules with parameter profiles)
-    |-- VisualTemplate (display configuration for editor and runtime views)
-    |-- TypeInstance (runtime objects spawned from a type definition)
-"""
+SparkLabs Engine - Custom Object Type System"""
 from __future__ import annotations
 
 import threading

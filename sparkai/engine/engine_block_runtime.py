@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - Block Runtime Executor
-
-This module provides the runtime execution layer for block-based game logic
-programs composed by the AI Block Programmer agent. While the agent's
-``dry_run`` simulates execution for validation, this runtime executor hooks
-into the live game loop to dispatch real events, evaluate conditions, and
-invoke actions against the running game state.
-
-The runtime subscribes to published block programs, listens for game events
-(collision, input, timer, start), and walks each program's block stack in
-order, evaluating conditions and dispatching actions to registered handlers.
-Execution state is tracked per program so the runtime can report live
-status, pause/resume programs, and feed execution telemetry back to the AI
-agents for self-improvement.
-
-Architecture:
-  BlockRuntimeExecutor (Singleton, double-checked locking, threading.RLock)
-    |-- RuntimeProgram   -- a published program loaded into the runtime
-    |-- ExecutionState   -- per-program live execution status
-    |-- ActionHandler    -- a registered callback for an action block type
-    |-- EventBinding      -- a binding between a game event and a program
-    |-- ExecutionLog      -- a recorded execution step for telemetry
-    |-- RuntimeStats      -- aggregate runtime statistics
-    |-- RuntimeSnapshot   -- full runtime snapshot
-    |-- RuntimeEvent      -- observable runtime lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the
-runtime is safe to call from multiple game-loop threads. Bounded in-memory
-stores use FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Engine - Block Runtime Executor"""
 
 from __future__ import annotations
 

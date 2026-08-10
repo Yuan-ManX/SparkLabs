@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Behavior Orchestrator
-
-Behavior tree orchestration system for AI-driven game entity logic.
-Manages behavior trees, nodes, transitions, and runtime tick execution
-for autonomous agent decision-making.
-
-Architecture:
-  EngineBehaviorOrchestrator (singleton)
-    |-- BehaviorNode (tree node with condition/action/decorator logic)
-    |-- BehaviorTree (rooted tree structure bound to an agent)
-    |-- BehaviorContext (runtime tick context with sensor/world/goal data)
-    |-- BehaviorTransition (cross-behavior transition rule)
-    |-- NodeType / TransitionType / BehaviorResult (domain enums)
-"""
+SparkLabs Engine - Behavior Orchestrator"""
 
 from __future__ import annotations
 

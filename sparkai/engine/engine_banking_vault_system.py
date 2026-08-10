@@ -1,12 +1,5 @@
 """
-SparkLabs Engine - Banking & Vault System
-
-Provides in-game banking services including player accounts, deposits,
-withdrawals, interest accrual, loans with repayment schedules, safe deposit
-boxes for item storage, currency exchange, and full transaction auditing.
-Designed as a self-contained singleton system with seed data for immediate
-integration testing.
-"""
+SparkLabs Engine - Banking & Vault System"""
 
 from __future__ import annotations
 

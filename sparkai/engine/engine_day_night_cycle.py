@@ -1,49 +1,5 @@
 """
-SparkLabs Engine - Day/Night Cycle System
-
-A time-of-day progression system for the SparkLabs AI-native game engine.
-This system simulates the cyclical passage of time across a full day —
-tracking the sun and moon positions, computing sky color gradients based
-on solar altitude, transitioning ambient light intensity and color
-temperature, and emitting phase-change events (dawn, noon, dusk, midnight).
-
-The system is distinct from the weather system (which handles
-precipitation, cloud cover, and atmospheric conditions) and the lighting
-director (which manages individual light placement and shadow casting).
-Day/night cycle governs the global time-of-day clock that those systems
-sample from.
-
-Architecture:
-  DayNightCycleSystem (singleton)
-    |-- TimePhase, CelestialBody, SkyPreset, DayNightEventKind
-    |-- CelestialState, SkyColorStop, DayNightConfig, DayNightStats,
-       DayNightSnapshot, DayNightEvent
-    |-- get_day_night_cycle
-
-Core Capabilities:
-  - set_time / get_time / advance_time: control the time-of-day clock.
-  - set_time_scale / get_time_scale: control how fast game time flows.
-  - get_sun / get_moon: retrieve celestial body positions (altitude,
-    azimuth, direction vector).
-  - get_sky_color: sample the sky color gradient at the current time.
-  - get_ambient_light: compute ambient light intensity and color
-    temperature for the current time.
-  - register_sky_preset / get_sky_preset / list_sky_presets /
-    remove_sky_preset: manage named sky color gradient presets.
-  - set_phase / get_phase / list_phases: manage time-of-day phases
-    (dawn, day, dusk, night) with transition boundaries.
-  - tick: advance the simulation by delta time, updating celestial
-    positions, sky colors, and emitting phase-change events.
-  - set_config / get_config: global tuning for day length, latitude,
-    and starting time.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`DayNightCycleSystem.get_instance` or the module-level
-:func:`get_day_night_cycle` factory.
-"""
+SparkLabs Engine - Day/Night Cycle System"""
 
 from __future__ import annotations
 

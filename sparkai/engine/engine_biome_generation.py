@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - Biome Generation Pipeline
-
-Procedural biome generation system that creates diverse, cohesive
-game environments with natural transitions, climate modeling, and
-ecologically sound terrain distributions. Integrates with the
-gameplay ecosystem simulator to produce living, dynamic worlds.
-
-Core capabilities:
-  - Multi-biome terrain generation with configurable parameters
-  - Climate zone modeling (temperature, precipitation, elevation)
-  - Biome transition blending with gradient zones
-  - Flora distribution based on biome properties
-  - World seed management for reproducible generation
-  - Heightmap synthesis with erosion simulation
-  - River and water body placement
-  - Resource node distribution within biomes
-
-Architecture:
-  BiomeGenerationPipeline (Singleton)
-    |-- BiomeDefinition (dataclass)
-    |-- ClimateZone (dataclass)
-    |-- TerrainLayer (dataclass)
-    |-- FloraTemplate (dataclass)
-    |-- WorldConfiguration (dataclass)
-    |-- define_biome()
-    |-- generate_terrain()
-    |-- compute_climate_zones()
-    |-- distribute_flora()
-    |-- blend_biome_transitions()
-"""
+SparkLabs Engine - Biome Generation Pipeline"""
 
 from __future__ import annotations
 

@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Decal System
-
-Projected decal rendering for surface detail and environmental effects.
-Manages planar, cylindrical, spherical, and mesh-surface decal projection
-with atlas-based texture selection and configurable blend modes.
-
-Architecture:
-    DecalSystem
-      |-- DecalProjector (texture source with projection type and sizing)
-      |-- DecalAtlas (grid-based texture atlas with tile indexing)
-      |-- DecalInstance (placed decal with world-space transform and blend mode)
-      |-- DecalRenderBatch (optimized render batch gathered by camera proximity)
-
-Decal Features:
-    - PLANAR: flat projection along a plane normal
-    - CYLINDRICAL: wraps around cylindrical surfaces
-    - SPHERICAL: projects onto spherical geometry
-    - MESH_SURFACE: conforms to underlying mesh vertices
-    - ALPHA_BLEND: standard transparency blending
-    - MULTIPLY: darkens the surface color
-    - ADDITIVE: brightens the surface color for glow effects
-    - NORMAL_MAP_ONLY: applies normal perturbation without color
-    - ATLAS: tile-based texture atlases for batch-efficient decal selection
-"""
+SparkLabs Engine - Decal System"""
 
 from __future__ import annotations
 

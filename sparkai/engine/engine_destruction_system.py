@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Destruction Physics System
-
-A comprehensive destruction and fracture physics system providing
-configurable fracture patterns, Voronoi-based shattering, debris
-simulation, structural integrity modeling, and efficient debris
-pooling for the SparkLabs game engine.
-
-Architecture:
-  DestructionPhysicsEngine (Singleton)
-    |-- FracturePattern       — predefined break pattern configurations
-    |-- VoronoiFracture       — Voronoi diagram-based shattering
-    |-- DestructionPhysics    — debris simulation and impulse resolution
-    |-- StructuralIntegrity   — load-bearing and collapse modeling
-    |-- DebrisPool            — object pooling for debris instances
-
-Destruction Pipeline:
-  1. Impact event triggers fracture at a contact point
-  2. FracturePattern determines the break style (radial, grid, etc.)
-  3. VoronoiFracture generates shard geometry via Voronoi cells
-  4. DestructionPhysics applies impulse to fragments
-  5. StructuralIntegrity evaluates support loss and cascading failure
-  6. DebrisPool manages fragment lifecycle and recycling
-
-Usage:
-    engine = get_destruction_physics_engine()
-    engine.fracture_object(object_id, impact_point=(0.5, 0.5), force=100.0)
-    engine.update(delta_time)
-"""
+SparkLabs Engine - Destruction Physics System"""
 
 from __future__ import annotations
 

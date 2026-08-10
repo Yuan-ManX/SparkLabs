@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Mass NPC Crowd Simulation System
-
-Manages large-scale NPC crowd behavior for the AI-native game engine.
-Provides crowd groups, individual agents, Reynolds flocking (separation,
-alignment, cohesion), grid-based pathfinding, panic and evacuation
-simulation, density-zone flow control, and social behaviors such as
-leader following, group formation, and queue formation.
-
-Architecture:
-  CrowdSimulationSystem (singleton)
-    |-- CrowdAgentState, CrowdGroupType, FlockingMode, PanicLevel
-    |-- CrowdAgent, CrowdGroup, DensityZone, PathfindingNode,
-       PathfindingGrid, CrowdEvent, CrowdConfig, CrowdStats,
-       CrowdSnapshot
-    |-- get_crowd_simulation_system
-
-Core Capabilities:
-  - register_group / get_group / list_groups / remove_group
-  - get_agent / list_agents / set_agent_target / change_agent_state
-  - register_density_zone / get_density_zone / list_density_zones /
-    remove_density_zone
-  - trigger_panic / calm_panic
-  - set_flocking_weights
-  - calculate_density / get_crowd_flow
-  - spawn_agents / despawn_agents
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CrowdSimulationSystem.get_instance` or the module-level
-:func:`get_crowd_simulation_system` factory.
-"""
+SparkLabs Engine - Mass NPC Crowd Simulation System"""
 
 from __future__ import annotations
 

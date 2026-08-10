@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Behavior Composer
-
-A behavior composition system that allows
-attaching composable, reusable behavior components to game objects. Behaviors can
-be mixed and matched on game objects, providing a flexible architecture for
-building complex game entity logic without deep inheritance hierarchies.
-
-Architecture:
-  BehaviorComposerEngine (singleton)
-    |-- BehaviorTemplateLibrary (manages behavior template definitions)
-    |-- BehaviorInstanceManager (manages behavior instance lifecycle)
-    |-- BehaviorSlotManager (manages behavior slots on objects)
-    |-- BehaviorConflictResolver (resolves conflicts between behaviors)
-    |-- BehaviorEventBus (routes events between behaviors)
-
-Usage:
-    composer = get_behavior_composer()
-    instance = composer.create_instance("PlatformerMovement", "player_1")
-    composer.attach_behavior("player_1", instance.instance_id)
-    composer.update_composition("player_1", 0.016)
-"""
+SparkLabs Engine - Behavior Composer"""
 
 from __future__ import annotations
 
