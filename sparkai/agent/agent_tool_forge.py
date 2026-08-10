@@ -1,18 +1,5 @@
 """
-SparkLabs Agent - Tool Forge
-
-Autonomous tool and skill creation system that generates new tools from
-successful task patterns, validates tool schemas, tracks tool performance,
-and manages a tool library with versioning.
-
-Architecture:
-  AgentToolForge
-    |-- Schema Registry (defines and stores tool schemas)
-    |-- Forge Engine (generates tools from templates / patterns / composition)
-    |-- Validation Pipeline (schema, execution, permission, timeout checks)
-    |-- Performance Tracker (success rate, duration, error distribution)
-    |-- Tool Lifecycle Manager (draft → testing → active → deprecated → broken)
-"""
+SparkLabs Agent - Tool Forge"""
 
 from __future__ import annotations
 

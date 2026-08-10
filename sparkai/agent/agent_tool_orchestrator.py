@@ -1,43 +1,5 @@
 """
-SparkLabs Agent - Tool Orchestrator
-
-Comprehensive tool orchestration system that enables AI agents to discover,
-compose, and execute tools in structured workflows. Provides a unified interface
-for tool registration, validation, execution, and result aggregation. Designed
-for autonomous game development agents that need to chain multiple operations
-across the engine, editor, and content pipeline.
-
-Architecture:
-  AgentToolOrchestrator (Singleton)
-    |-- ToolRegistry (discoverable tool catalog with metadata)
-    |-- ToolExecutor (validated execution with retry and timeout)
-    |-- ToolComposer (sequence and parallel tool composition)
-    |-- ToolAuditor (execution trace and observability)
-    |-- ToolCache (result caching for idempotent operations)
-    |-- ToolSchema (structured input/output type definitions)
-
-Tool Categories:
-  - ENGINE: game engine operations (scene, physics, rendering)
-  - EDITOR: editor-level operations (selection, undo, layout)
-  - CONTENT: asset creation and manipulation
-  - AGENT: agent introspection and configuration
-  - EXTERNAL: API calls, file system, network
-
-Usage:
-    ot = AgentToolOrchestrator.get_instance()
-    ot.initialize()
-
-    ot.register_tool("create_scene", create_scene_fn, category="ENGINE")
-    result = ot.execute("create_scene", {"name": "Level1", "width": 1920})
-
-    pipeline = ot.compose([
-        ToolStep("load_assets", {"path": "assets/"}),
-        ToolStep("create_scene", {"name": "Level1"}),
-        ToolStep("validate_scene", {}),
-    ])
-    results = ot.execute_pipeline(pipeline)
-    ot.shutdown()
-"""
+SparkLabs Agent - Tool Orchestrator"""
 
 from __future__ import annotations
 

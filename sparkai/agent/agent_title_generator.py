@@ -1,16 +1,5 @@
 """
-Title Generator - Dynamic title generation for projects and sessions.
-
-Architecture:
-    TitleGenerator/
-    |-- TitleStyle (generation style enumeration)
-    |-- TitleContext (generation parameters and input)
-    |-- TitleGenerator (unified generation engine with fallback)
-    |-- TITLE_TEMPLATES (structured naming patterns)
-
-Produces descriptive and contextually relevant titles for projects,
-game assets, sessions, and AI-generated content within the game engine.
-"""
+Title Generator - Dynamic title generation for projects and sessions."""
 
 from __future__ import annotations
 

@@ -1,10 +1,5 @@
 """
-SparkAI Agent - Tool Output Pruning Engine
-
-Systematic pipeline for pruning large tool outputs before they
-enter the agent context window. Prevents context overflow by
-truncating, summarizing, and structuring tool results.
-"""
+SparkAI Agent - Tool Output Pruning Engine"""
 
 import json
 import time

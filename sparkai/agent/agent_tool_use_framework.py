@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Tool Use Framework
-
-A unified framework that lets AI agents discover, call, and chain tools
-(functions) inside the SparkLabs AI-native game engine. Pairs a typed tool
-registry with a multi-step reasoning pipeline so agents can move fluidly
-between deliberation and concrete game-world actions.
-
-Architecture:
-  ToolUseFramework
-    |-- ToolRegistry      (register / unregister / list / search tools)
-    |-- ToolExecutor      (sync / async / batch execution, timeout, retry)
-    |-- ToolChainer       (sequential, conditional, parallel, retry chains)
-    |-- FunctionCaller    (parse LLM function-call requests, batch calls)
-    |-- PipelineBuilder   (mix tool calls with reasoning steps)
-    |-- ToolDiscovery / HistoryTracker / VersionManager / PermissionGate / SchemaValidator
-"""
+SparkLabs Agent - Tool Use Framework"""
 
 from __future__ import annotations
 

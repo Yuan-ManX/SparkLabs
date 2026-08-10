@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Theory of Mind Engine
-
-A cognitive modeling layer that enables AI agents and NPCs to reason about the
-mental states of other agents and players. The engine tracks beliefs, desires,
-intentions, and knowledge states, then uses those models to predict behavior,
-infer hidden beliefs from observed actions, detect deception, and resolve
-internal conflicts between competing desires.
-
-Architecture:
-  TheoryOfMindEngine (Singleton)
-    |-- BeliefEntry (what an agent holds to be true about a target)
-    |-- IntentionEntry (a committed course of action toward a target)
-    |-- DesireEntry (a motivational drive toward a target)
-    |-- PerspectiveModel (one agent's model of another agent's mind)
-    |-- MentalStateSnapshot (point-in-time view of an agent's full mental state)
-
-Core Capabilities:
-  - Register and revise beliefs, intentions, and desires
-  - Build first/second/third order perspective models
-  - Infer a target's beliefs from their observed actions
-  - Predict a target's next action from their mental state
-  - Detect deception by comparing stated beliefs against actions
-  - Resolve conflicts between competing desires
-  - Serialize and restore the full engine state
-"""
+SparkLabs Agent - Theory of Mind Engine"""
 
 from __future__ import annotations
 

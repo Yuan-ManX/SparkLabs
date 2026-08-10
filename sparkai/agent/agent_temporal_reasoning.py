@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Temporal Reasoning Engine
-
-Temporal cognition for AI agents: reasoning about time, schedules,
-deadlines, durations, and temporal ordering of events.
-
-Agents use this module to plan around timed quests, respect schedules
-(shops opening/closing, day/night activities), reason about
-"before/after/during" relationships, and understand deadlines.
-
-Architecture:
-  TemporalReasoningEngine (Singleton, double-checked locking)
-    |-- TemporalRelation     -- Allen's interval algebra relations
-    |-- TimeInterval         -- a bounded span of time
-    |-- ScheduleEntry        -- a scheduled activity with timing
-    |-- TemporalConstraint   -- a constraint between intervals
-    |-- TemporalReasoningSnapshot -- complete engine snapshot
-
-Subsystems:
-  1. Interval Arithmetic -- add/subtract/intersect/union time intervals
-  2. Allen's Algebra    -- 13 temporal relations between intervals
-  3. Schedule Planning   -- resolve temporal constraints to find schedules
-  4. Deadline Tracking   -- track upcoming deadlines and urgency
-  5. Temporal Queries    -- answer "what happens before/after/during X?"
-"""
+SparkLabs Agent - Temporal Reasoning Engine"""
 
 from __future__ import annotations
 

@@ -1,16 +1,5 @@
 """
-SparkLabs Agent - Tool Registry
-
-A singleton standardized tool schema and registry system for the SparkLabs
-AI game engine. Manages tool discovery, schema validation, parameter
-verification, and auto-generation of tool metadata.
-
-Architecture:
-  ToolRegistry (singleton)
-    |-- ToolSchema (tool definition with parameters, return type)
-    |-- ToolBinding (registered tool instance with metadata)
-    |-- ToolInvocation (record of a tool call with result)
-"""
+SparkLabs Agent - Tool Registry"""
 
 from __future__ import annotations
 

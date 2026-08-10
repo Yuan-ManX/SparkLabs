@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Timeline Brancher
-
-Timeline branching system for the SparkLabs AI-native game engine.
-Creates, manages, and compares multiple parallel simulation timelines.
-Each timeline branch is an isolated state that can be replayed,
-compared, and merged to support what-if analysis and narrative
-exploration.
-
-Architecture:
-  TimelineBrancherEngine (Singleton)
-    |-- Timeline Creation & Branching (parallel simulation paths)
-    |-- Event Recording (per-tick event log)
-    |-- State Snapshots (world and entity state capture)
-    |-- Timeline Comparison (multi-axis diffing)
-    |-- Timeline Merging (strategy-based reconciliation)
-    |-- Timeline Replay (range-based event playback)
-
-Operations:
-  - create_timeline: spawn a new root timeline
-  - branch_timeline: fork a timeline at a given tick
-  - record_event / save_state: append per-tick observations
-  - compare_timelines: diff two timelines along an axis
-  - merge_timelines: reconcile two timelines under a strategy
-  - replay_timeline: re-execute events across a tick range
-  - pause / resume / abandon: lifecycle control
-"""
+SparkLabs Agent - Timeline Brancher"""
 
 from __future__ import annotations
 

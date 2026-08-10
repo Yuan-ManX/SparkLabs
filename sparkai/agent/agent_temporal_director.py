@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Temporal Director
-
-The AgentTemporalDirector is the time and pacing intelligence of the
-AI-native game engine. It coordinates WHEN all AI modules should act,
-controls temporal game mechanics, and manages event timing.
-
-Architecture:
-  Game Clock  -->  TICK  -->  ASSESS  -->  SCHEDULE  -->  DISPATCH  -->  VERIFY
-  (real time,    (advance    (evaluate    (plan event        (emit           (confirm
-   dilated,       game time)  pacing and   timing for AI      timed            events
-   frozen)                    rhythm)      modules)           directives)      fired)
-
-The director manages:
-  - Time scale (real-time, slow-motion, fast-forward, frozen)
-  - Pacing rhythm (tension build/release cycles)
-  - Event scheduling (when AI modules should deploy content)
-  - Day/night cycle with narrative-aware transitions
-  - Temporal mechanics (flashbacks, time rewind, bullet time)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Temporal Director"""
 
 from __future__ import annotations
 

@@ -1,27 +1,5 @@
 """
-SparkAI Agent - Tool Permission System
-
-Role-based tool access control that restricts which tools
-each agent role can execute. Directors get full access,
-workers get restricted toolsets, and specialists get
-domain-specific tools.
-
-Architecture:
-  ToolPermissionSystem
-    |-- PermissionPolicy (role-based access rules)
-    |-- ToolClassifier (danger level classification)
-    |-- ApprovalGate (human approval for dangerous operations)
-    |-- PermissionAuditLog (access tracking)
-
-Permission Hierarchy:
-  FULL_ACCESS > WORKSPACE_WRITE > READ_ONLY > RESTRICTED
-
-Role-Tool Mapping:
-  DIRECTOR  -> FULL_ACCESS (all tools)
-  LEAD      -> WORKSPACE_WRITE (domain tools + write)
-  SPECIALIST -> READ_ONLY (domain tools only)
-  WORKER    -> RESTRICTED (minimal toolset)
-"""
+SparkAI Agent - Tool Permission System"""
 
 from __future__ import annotations
 

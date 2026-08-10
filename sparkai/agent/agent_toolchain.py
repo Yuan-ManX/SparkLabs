@@ -1,18 +1,5 @@
 """
-SparkAI Agent - Tool Chain Engine
-
-A dynamic tool composition and execution system that allows agents
-to create custom tool chains, manage tool dependencies, and execute
-complex multi-step operations with parallel execution support.
-
-Architecture:
-  ToolChainEngine
-    |-- ToolChain (ordered sequence of tool invocations)
-    |-- ChainStep (individual tool invocation with I/O mapping)
-    |-- DependencyResolver (resolve execution order from dependencies)
-    |-- ParallelExecutor (execute independent steps concurrently)
-    |-- ChainTemplate (reusable tool chain templates)
-"""
+SparkAI Agent - Tool Chain Engine"""
 
 from __future__ import annotations
 

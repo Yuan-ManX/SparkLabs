@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Tool Composer
-
-Tool composition engine for the SparkLabs AI-native game engine agent.
-Enables chaining multiple tools into coordinated pipelines for complex
-game development operations. Supports sequential, parallel, and conditional
-tool chains with dependency resolution, output passing between tools,
-rollback on failure, and execution scheduling.
-
-Architecture:
-  ToolComposer
-    |-- ToolChain (ordered sequence of tool calls)
-    |-- ToolStep (single tool invocation with inputs/outputs)
-    |-- ChainTemplate (reusable pre-defined tool pipelines)
-    |-- ExecutionPlan (resolved execution DAG with scheduling)
-    |-- ChainContext (shared state across chained tools)
-"""
+SparkLabs Agent - Tool Composer"""
 
 from __future__ import annotations
 

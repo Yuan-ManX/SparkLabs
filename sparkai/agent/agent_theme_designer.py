@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Theme Designer
-
-AI-powered theme and style generation system for game interfaces.
-Generates complete design token sets including colors, typography,
-spacing, rounding, shadows, borders, transitions, and icons from
-natural language descriptions and mood specifications.
-
-Architecture:
-  ThemeDesigner
-    |-- Color Extractor (image description → color token generation)
-    |-- Typography Composer (mood-aware font stack assembly)
-    |-- Spacing Calculator (rhythmic scale generation)
-    |-- Mood Interpreter (mood keyword → design parameter mapping)
-    |-- Theme Blender (weighted interpolation between two themes)
-    |-- CSS Exporter (design token → CSS custom properties)
-
-Supports 10 distinct mood categories for diverse visual styles.
-"""
+SparkLabs Agent - Theme Designer"""
 
 from __future__ import annotations
 

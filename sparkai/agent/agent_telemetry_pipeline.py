@@ -1,19 +1,5 @@
 """
-SparkLabs Agent - Telemetry Pipeline
-
-Structured metrics streaming to analytics and sink destinations.
-Provides a configurable pipeline for emitting agent-level metrics,
-registering output sinks (stdout, file, http, websocket, kafka,
-cloudwatch), setting aggregation policies, and flushing buffered
-metrics on demand with throughput monitoring.
-
-Architecture:
-  AgentTelemetryPipeline
-    |-- TelemetryMetric (individual data point with tags and value)
-    |-- PipelineSink (destination configuration for metric delivery)
-    |-- AggregationWindow (time-bounded aggregation policy per metric)
-    |-- PipelineStats (cumulative pipeline throughput and health)
-"""
+SparkLabs Agent - Telemetry Pipeline"""
 
 from __future__ import annotations
 

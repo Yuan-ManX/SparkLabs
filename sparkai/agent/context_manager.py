@@ -1,14 +1,5 @@
 """
-SparkAI Agent - Context Manager
-
-Orthogonal context management with two distinct operations:
-- compress(): Shrink context when over budget (summarization)
-- select_context(): Per-turn context selection before generation
-
-This separation avoids conflating permanent transcript compression
-with per-turn retrieval. Budget parameters control which messages
-are protected during compaction.
-"""
+SparkAI Agent - Context Manager"""
 
 from __future__ import annotations
 

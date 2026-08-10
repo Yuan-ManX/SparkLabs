@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Timeline Branching System
-
-Timeline branching system for game narrative and world simulation.
-Allows agents to create, manage, and switch between multiple parallel
-timeline branches. Each branch is an isolated state that can be replayed,
-compared, and merged to support what-if analysis and narrative exploration.
-
-Architecture:
-  TimelineManager (Singleton)
-    |-- Timeline Creation (spawn new root timelines)
-    |-- Event Recording (per-timeline event log)
-    |-- Branching (fork a timeline at current state)
-    |-- State Snapshots (save and restore timeline state)
-    |-- Timeline Merging (reconcile two timelines)
-    |-- Lifecycle Control (active/paused/frozen/archived management)
-
-Operations:
-  - create_timeline: spawn a new root timeline
-  - record_event: append an event to a timeline
-  - create_branch: fork a timeline at the current point
-  - switch_timeline: change the active timeline
-  - merge_timelines: reconcile two timelines
-  - create_snapshot: capture current timeline state
-  - restore_snapshot: restore a timeline to a previous snapshot
-"""
+SparkLabs Agent - Timeline Branching System"""
 
 from __future__ import annotations
 
