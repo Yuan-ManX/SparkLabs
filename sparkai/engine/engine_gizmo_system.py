@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Gizmo System
-
-Editor gizmo system providing visual transform manipulation tools for
-scene objects within the editor viewport. Supports translate, rotate,
-and scale gizmos with configurable snapping, axis constraints, and
-multi-selection box selection.
-
-Architecture:
-  GizmoSystem
-    |-- GizmoConfig (per-instance gizmo mode, space, snap, and axis settings)
-    |-- TransformHandle (on-screen draggable handles for per-axis manipulation)
-    |-- SelectionBox (rubber-band rectangle for multi-object selection)
-    |-- SnapSettings (grid/angle/scale step configuration for precise editing)
-
-Gizmo Features:
-  - TRANSLATE: move selected objects along X, Y, Z or planar axes (XY, XZ, YZ)
-  - ROTATE: rotate selected objects about a specified axis with degree snapping
-  - SCALE: uniform or per-axis scaling with percentage-step snapping
-  - BOX_SELECT: drag-to-select multiple objects via screen-space rectangle
-  - SPACE: toggle between local, world, and view coordinate spaces
-  - SNAPPING: grid-based vertex/edge snapping, angle increment, scale percent
-"""
+SparkLabs Engine - Gizmo System"""
 
 from __future__ import annotations
 

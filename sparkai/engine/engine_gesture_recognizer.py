@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Gesture Recognizer System
-
-Multi-touch gesture detection and pattern matching for game input.
-Processes raw touch streams into recognized gesture events through a
-configurable recognition pipeline. Supports tap, swipe, pinch, rotate,
-pan, flick, and complex multi-step gesture sequences with per-type
-sensitivity calibration.
-
-Architecture:
-  GestureRecognizerSystem
-    |-- TouchBuffer (ring-buffered touch history per touch point)
-    |-- PatternMatcher (template-based gesture pattern matching)
-    |-- SequenceEngine (multi-step complex gesture sequence recognition)
-    |-- SensitivityCalibrator (per-gesture-type parameter adjustment)
-    |-- ActiveTouchTracker (live tracking of current touch points)
-"""
+SparkLabs Engine - Gesture Recognizer System"""
 
 from __future__ import annotations
 

@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Game Polish Injector
-
-Injects professional-grade polish features into the generated HTML5 game:
-  - Combo / multiplier system with visual feedback
-  - Particle burst effects on collect, defeat, and damage events
-  - Floating score popups that rise and fade
-  - Contextual tutorial hints for first-time players
-  - Level transition screen with level name display
-  - Settings overlay with audio toggle and restart
-
-The injector mirrors the FeatureInjector pattern: it produces JavaScript
-snippets inserted into the HtmlAssembler template. All systems use typeof
-checks for graceful degradation when disabled.
-"""
+SparkLabs Engine - Game Polish Injector"""
 
 from __future__ import annotations
 

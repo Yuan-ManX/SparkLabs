@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Gem Socketing System
-
-Provides equipment socket management where players insert gems into
-socketed items to gain stat bonuses, set effects, and conditional
-modifiers. Sockets can be unlocked, gems crafted, and set bonuses
-triggered when multiple gems of the same set are equipped across
-a character's gear.
-
-Architecture:
-  GemSocketingSystem (singleton)
-    |-- GemType, GemRarity, SocketColor, SocketState, GemSetBonusType,
-       SocketEventKind
-    |-- GemDefinition, GemSetDefinition, SocketDefinition,
-       SocketedGem, PlayerSocketItem, GemCraftRecipe, GemCraftResult,
-       SocketBonus, SocketConfig, SocketStats, SocketSnapshot, SocketEvent
-    |-- get_gem_socketing_system
-
-Core Capabilities:
-  - register_gem / remove_gem / get_gem / list_gems
-  - register_gem_set / get_gem_set / list_gem_sets
-  - register_socket_item / get_socket_item / list_socket_items
-  - add_socket_to_item / unlock_socket / get_socket
-  - insert_gem / remove_gem / get_socketed_gems
-  - compute_socket_bonuses / compute_set_bonuses
-  - get_player_bonuses / get_active_set_bonuses
-  - register_recipe / get_recipe / list_recipes / craft_gem
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`GemSocketingSystem.get_instance` or the module-level
-:func:`get_gem_socketing_system` factory.
-"""
+SparkLabs Engine - Gem Socketing System"""
 
 from __future__ import annotations
 

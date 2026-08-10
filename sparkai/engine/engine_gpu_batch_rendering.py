@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - GPU Batch Rendering System
-
-GPU-accelerated batch rendering system for the SparkLabs AI-native game engine.
-Manages sprite layers, tile layers, render batches, and GPU profiling for
-optimized 2D rendering pipelines. Provides instanced rendering support,
-chunked tilemap rendering, draw call batching, and quality preset management.
-
-Architecture:
-  EngineGPUBatchRendering (Singleton)
-    |-- SpriteLayerConfig     — per-layer sprite rendering configuration
-    |-- SpriteInstance        — individual sprite within a layer
-    |-- TileLayerConfig       — chunked tilemap layer configuration
-    |-- RenderBatch           — assembled draw command batch
-    |-- GPUProfile             — per-frame GPU performance metrics
-    |-- BlendMode (enum)      — pixel blending operations
-    |-- CullMode (enum)       — face culling strategies
-    |-- SortOrder (enum)      — draw order sorting strategies
-    |-- BatchType (enum)      — batch classification by content type
-    |-- LODLevel (enum)       — level-of-detail quality tiers
-"""
+SparkLabs Engine - GPU Batch Rendering System"""
 
 from __future__ import annotations
 

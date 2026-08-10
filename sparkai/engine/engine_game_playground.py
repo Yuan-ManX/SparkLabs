@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - Game Playground
-
-A Sandbox Game Runtime for the SparkLabs AI-native game engine. It enables
-instant preview and testing of game mechanics in a sandboxed environment
-for rapid iteration and testing.
-
-Architecture:
-  EngineGamePlayground (Singleton)
-    |-- SandboxRuntime:      isolated game runtime for preview
-    |-- SceneLoader:         scene loading and instantiation
-    |-- PhysicsSimulator:    simple 2D physics for testing mechanics
-    |-- InputSimulator:      automated input testing and replay
-    |-- GameLoop:            fixed-timestep game loop with delta time
-    |-- PerformanceMonitor:  FPS, memory, and frame timing
-    |-- HotReload:           watch for scene changes and reload automatically
-    |-- DebugOverlay:        runtime debug information overlay
-
-Data Classes:
-    PlaygroundSession  — active preview session with state
-    RuntimeEntity      — game entity in the sandbox
-    PhysicsConfig      — physics configuration parameters
-    FrameMetrics       — per-frame performance data
-    InputSequence      — automated input replay sequence
-    DebugInfo          — runtime debug information
-
-Enums:
-    PlaygroundState    — IDLE, LOADING, RUNNING, PAUSED, STOPPED, ERROR
-    PhysicsMode        — NONE, SIMPLE, FULL
-    InputMode          — MANUAL, RECORDING, PLAYBACK
-
-Usage:
-    playground = get_game_playground()
-    session = playground.create_session(scene_data)
-    playground.start_session(session.session_id)
-    metrics = playground.step_frame(session.session_id)
-    playground.stop_session(session.session_id)
-"""
+SparkLabs Engine - Game Playground"""
 
 from __future__ import annotations
 

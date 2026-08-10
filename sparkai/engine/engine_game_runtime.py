@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Game Runtime
-
-Transforms a synthesized GameDesignDocument into a complete, self-contained,
-playable HTML5 game. The runtime acts as the bridge between the AI content
-synthesis layer (GameContentSynthesizer) and the browser-based player.
-
-Architecture:
-  GameRuntime (Singleton)
-    |-- ConceptCompiler   -> converts GDD concept into game config
-    |-- WorldRenderer     -> paints biomes, structures, points of interest
-    |-- EntityFactory     -> spawns player, NPCs, enemies, collectibles
-    |-- MechanicBinder    -> wires core/secondary mechanics into game logic
-    |-- NarrativeHost     -> injects quests, dialogue, branching points
-    |-- LevelDirector     -> sequences levels with difficulty/pacing curves
-    |-- HtmlAssembler     -> produces the final HTML/CSS/JS document
-
-The produced HTML runs entirely in the browser (no external dependencies),
-using a canvas-based game loop with physics, input, HUD, and win/lose states.
-This design lets the game execute inside the GameRunner iframe without any
-network round-trips, while still reflecting the AI-generated content.
-
-Pattern integration (original SparkLabs design):
-  - Scene tree architecture with hierarchical node composition
-  - Fixed-timestep game loop with interpolation
-  - Component-based entity composition (ECS roots)
-  - Sprite batching and layer composition
-  - Deterministic update pipeline for replayability
-"""
+SparkLabs Engine - Game Runtime"""
 
 from __future__ import annotations
 

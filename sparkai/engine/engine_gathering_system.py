@@ -1,46 +1,5 @@
 """
-SparkLabs Engine - Gathering System
-
-A resource collection system for the SparkLabs AI-native game engine.
-Manages harvestable resource nodes (mining veins, herb patches, fishing
-spots, woodcutting trees, hunting grounds), tool requirements, yield
-calculation with skill-based bonuses, node depletion and regeneration
-cycles, and gathering minigame state tracking.
-
-Each resource node has a type, position, maximum yield, current remaining
-amount, required tool tier, skill requirement, regeneration timer, and
-loot table for yield distribution. Designed for survival crafting games,
-MMORPG gathering professions, and farming simulations.
-
-Architecture:
-  GatheringSystem (singleton)
-    |-- ResourceType, NodeState, GatherEventKind, MinigamePhase
-    |-- YieldEntry, ResourceNode, ToolSpec, GatherSession,
-       GatherConfig, GatherStats, GatherSnapshot, GatherEvent
-    |-- get_gathering_system
-
-Core Capabilities:
-  - register_node / remove_node / get_node / list_nodes: manage
-    harvestable resource nodes in the world.
-  - register_tool / get_tool / list_tools: define gathering tools
-    with tier, efficiency, and applicable resource types.
-  - start_gather / complete_gather / cancel_gather: execute gathering
-    operations with tool checks, skill validation, yield rolls, and
-    node depletion.
-  - list_sessions / get_session: track active and completed gathering
-    operations.
-  - tick: advance node regeneration timers and active gathering
-    sessions.
-  - set_config / get_config: global tuning for max nodes, regen
-    rates, and yield multipliers.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`GatheringSystem.get_instance` or the module-level
-:func:`get_gathering_system` factory.
-"""
+SparkLabs Engine - Gathering System"""
 
 from __future__ import annotations
 

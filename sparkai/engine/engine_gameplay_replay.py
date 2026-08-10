@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - Gameplay Replay
-
-Records, stores, and plays back gameplay sessions. Captures state
-snapshots at configurable intervals and records discrete events, enabling
-playback at variable speeds, jumping to specific timestamps, and
-post-session analysis.
-
-The replay system operates in three modes:
-- RECORDING: actively capturing snapshots and events from a live session
-- PLAYBACK: replaying a recorded session, advancing through snapshots
-- IDLE: no active session
-
-State snapshots are dict-based and opaque to the replay system itself;
-external systems (scene managers, physics engines) provide the snapshot
-data through registered capture callbacks. This keeps the replay system
-decoupled from the specific data being recorded.
-"""
+SparkLabs Engine - Gameplay Replay"""
 
 from __future__ import annotations
 

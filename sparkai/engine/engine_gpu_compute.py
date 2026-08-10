@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - GPU Compute Pipeline
-
-A generalized GPU compute shader management and execution pipeline that
-enables parallel computation on the GPU for non-rendering tasks. Powers
-particle physics, procedural generation, AI inference, audio processing,
-and other data-parallel workloads via the engine's compute shader abstraction.
-
-Architecture:
-  EngineGPUCompute (Singleton)
-    |-- ComputeKernel (individual compute shader program)
-    |-- ComputeDispatch (kernel execution configuration)
-    |-- ComputeBuffer (GPU memory buffer management)
-    |-- ComputePipeline (ordered kernel execution chain)
-    |-- BarrierManager (synchronization point management)
-    |-- ResourceTracker (GPU memory accounting)
-
-Core Capabilities:
-  - Compute shader compilation and caching
-  - Multi-dimensional dispatch configuration (1D/2D/3D)
-  - GPU buffer allocation with readback synchronization
-  - Ordered kernel execution with pipeline barriers
-  - Workgroup size optimization and occupancy analysis
-  - GPU memory budget tracking and resource management
-"""
+SparkLabs Engine - GPU Compute Pipeline"""
 
 from __future__ import annotations
 
