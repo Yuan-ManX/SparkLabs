@@ -1,45 +1,5 @@
 """
-SparkLabs Engine - Thermal Dynamics System
-
-Simulates heat propagation, temperature diffusion, fire spread, phase
-transitions (melting, freezing, boiling, condensing), and thermal-based
-gameplay mechanics for the SparkLabs AI-native game engine. The system
-maintains a set of thermal zones, each backed by a discretized
-temperature grid, and steps them forward with conduction, convection,
-and radiation transfer modes. Heat sources inject energy into zones,
-fire fronts propagate across combustible materials, and materials can
-transition between solid, liquid, gas, and plasma states.
-
-Architecture:
-  _ThermalDynamicsSystem (singleton)
-    |-- HeatTransferMode, FireIntensity, FireStatus, PhaseState,
-       ThermalZoneStatus, ThermalEventKind
-    |-- ThermalConfig, ThermalZone, HeatSource, FireFront,
-       MaterialThermal, TemperatureReading, PhaseTransition,
-       ThermalSnapshot, ThermalStats, ThermalEvent
-    |-- get_thermal_dynamics_system
-
-Core Capabilities:
-  - register_zone / get_zone / remove_zone / list_zones /
-    set_zone_temperature / get_zone_temperature / get_zone_status
-  - register_heat_source / get_heat_source / remove_heat_source /
-    list_heat_sources / adjust_heat_source / toggle_heat_source
-  - ignite_fire / get_fire / extinguish_fire / list_fires /
-    spread_fire / get_fire_intensity / check_fire_spread / get_fire_front
-  - register_material / get_material / list_materials / remove_material
-  - measure_temperature / get_temperature_grid / compute_heat_flow /
-    check_phase_transition / get_phase_transition / list_phase_transitions /
-    apply_cooling / apply_heating
-  - ai_predict_fire_spread / ai_optimize_cooling / ai_assess_thermal_risk
-  - get_status / get_stats / get_snapshot / get_config / set_config /
-    list_events / tick / reset_zone / get_temperature_readings /
-    get_visualization_data / get_heat_map
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`_ThermalDynamicsSystem.get_instance` or the module-level
-:func:`get_thermal_dynamics_system` factory.
-"""
+SparkLabs Engine - Thermal Dynamics System"""
 
 from __future__ import annotations
 

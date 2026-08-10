@@ -1,10 +1,5 @@
 """
-TextureAtlas - Dynamic texture atlas packing and sprite region management.
-
-Packs multiple sprite textures into a single atlas texture to reduce draw
-calls and GPU state changes. Supports multiple packing algorithms, atlas
-resizing policies, and defragmentation for the SparkLabs game engine.
-"""
+TextureAtlas - Dynamic texture atlas packing and sprite region management."""
 
 import threading
 import time

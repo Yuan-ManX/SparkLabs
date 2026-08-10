@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Pet & Companion System
-
-Manages collectible pets and combat companions that follow players, assist
-in battle, level up, learn abilities, wear equipment, and build loyalty.
-Players tame wild creatures, hatch eggs, train pets, and deploy them as
-active companions during gameplay.
-
-Architecture:
-  PetCompanionSystem (singleton)
-    |-- PetSpecies, PetRole, PetMood, PetStatus, AcquireMethod, PetEventKind
-    |-- PetAbility, PetSpeciesDefinition, PlayerPet, PetEquipmentSlot,
-       PetTrainingSession, PetBondRecord, PetConfig, PetStats, PetSnapshot,
-       PetEvent
-    |-- get_pet_companion_system
-
-Core Capabilities:
-  - register_species / remove_species / get_species / list_species
-  - register_ability / get_ability / list_abilities
-  - acquire_pet / release_pet / get_pet / list_player_pets
-  - summon_companion / dismiss_companion / get_active_companion
-  - feed_pet / pet_mood_update / get_mood
-  - train_pet / get_training_history
-  - teach_ability / forget_ability / get_pet_abilities
-  - equip_pet_item / unequip_pet_item
-  - level_up_pet / gain_pet_xp / evolve_pet
-  - calculate_combat_power / get_bond_level
-  - record_bond_interaction / get_bond_history
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`PetCompanionSystem.get_instance` or the module-level
-:func:`get_pet_companion_system` factory.
-"""
+SparkLabs Engine - Pet & Companion System"""
 
 from __future__ import annotations
 

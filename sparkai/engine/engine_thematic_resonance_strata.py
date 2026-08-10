@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Thematic Resonance Strata
-
-The EngineThematicResonanceStrata treats a story's themes as a layered
-resonance field rather than a flat list. Themes do not all live at the
-same depth. A surface stratum holds literal, stated themes the player can
-point at in dialogue or text. A mid stratum holds recurring motifs that
-gesture toward deeper meaning without naming it. A deep stratum holds
-archetypal patterns the player feels more than reads. When a theme is
-present in all three strata at once, the strata reinforce one another and
-the theme is amplified and propagated outward. When a theme only lives at
-the surface, with nothing underneath, it slowly fades.
-
-The output is a resonance map: which themes are gathering depth, which
-are staying shallow, and how strongly each one vibrates across layers.
-
-Architecture:
-  STRATIFY    ->  RESONATE   ->  AMPLIFY    ->  PROPAGATE  ->  INTEGRATE
-  (each theme    (cross-       (high-reso-    (amplified     (fold the
-   is placed      stratum       nance themes   themes bleed   propagated
-   into its       resonance     gain           into adjacent  state back
-   surface/mid/   is computed   amplitude;     narrative      into the
-   deep presence  for each      isolated       regions,       stratum map;
-   values)        theme)        themes decay)  seeding mid-   emit a
-                                                level motifs)  resonance
-                                                               report)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Thematic Resonance Strata"""
 
 from __future__ import annotations
 

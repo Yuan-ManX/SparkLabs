@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Perspective Lattice Projector
-
-The EnginePerspectiveLatticeProjector holds multiple co-existing
-PERSPECTIVES (camera, audio, narrative, social, spatial) against a
-scene at once, as a lattice. Each perspective is a node; where two
-perspectives' concerns cross, a lattice edge forms. The projector
-orients the lattice to the scene, lets each perspective project its
-concerns onto the scene, finds where the projections intersect,
-focuses the lattice toward the most coherent multi-perspective
-whole, and resolves the conflicts that the intersections surface.
-
-A single camera says where to look; a single hologram says what is
-there. A lattice of perspectives says how the camera, the sound, the
-story, the crowd, and the space all agree - and where they do not,
-that disagreement is itself the scene.
-
-Architecture:
-  ORIENT    ->  PROJECT   ->  INTERSECT  ->  FOCUS   ->  RESOLVE
-  (the lattice     (each       (where the     (the lattice    (once the
-   is oriented      perspective  projections     is condensed    conflicts
-   to the scene     projects     cross, a        toward the       are damped
-   context)         its concerns lattice edge    most coherent    and the
-                    onto the     forms)          multi-perspective lattice
-                    scene)                       whole)           settles)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Perspective Lattice Projector"""
 
 from __future__ import annotations
 

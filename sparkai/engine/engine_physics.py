@@ -1,22 +1,5 @@
 """
-SparkLabs Engine Physics
-
-A complete physics simulation engine for the AI-native game engine.
-Provides rigid body dynamics, collision detection, constraint solving,
-force application, spatial partitioning, and raycasting.
-
-Architecture:
-  PhysicsEngine (Singleton)
-    |-- PhysicsBody         — rigid body with position, rotation, velocity, mass
-    |-- PhysicsConstraint   — joint/constraint between two bodies
-    |-- CollisionEvent      — recorded collision data per event
-
-Collision Pipeline:
-  1. Broad Phase  — grid-based spatial hash culling
-  2. Narrow Phase — shape-specific intersection tests (AABB, circle, polygon)
-  3. Resolution   — impulse-based contact resolution
-  4. Constraints  — solved after collision response
-"""
+SparkLabs Engine Physics"""
 
 from __future__ import annotations
 

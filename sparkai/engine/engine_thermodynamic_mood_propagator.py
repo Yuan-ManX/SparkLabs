@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Thermodynamic Mood Propagator
-
-The ThermodynamicMoodPropagator treats the mood of a game world as a
-thermal field laid across a spatial graph. Each mood cell carries a
-temperature (how intense the mood burns), an entropy (how dispersed the
-mood's energy has become), and a mood label (the felt quality of the
-heat). Mood heat flows along adjacency edges the way heat flows along a
-conductor: hot cells warm their neighbors, cool cells drain them, and
-the whole field drifts toward a local thermal balance.
-
-When entropy piles up beyond a vent threshold the cell opens a vent and
-bleeds the excess off, conserving the total energy budget. As a cell's
-temperature crosses thresholds it moves through thermal phases - COLD,
-WARM, HOT, INCANDESCENT, SUPERCOOLED - and the felt mood label is
-re-derived from the new thermal state.
-
-Architecture:
-  SAMPLE      ->  DIFFUSE     ->  EQUILIBRATE  ->  DISSIPATE  ->  COMMIT
-  (read the     (flow heat      (pull each cell   (vent excess   (lock in the
-   field as       across the     toward the       entropy,       new field,
-   it stands)     adjacency      local average    check the      re-derive
-                 graph)         and re-derive    conservation   phase and
-                                the mood label)  laws)          write events)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Thermodynamic Mood Propagator"""
 
 from __future__ import annotations
 

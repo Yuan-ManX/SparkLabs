@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Photography Mode System
-
-Manages in-game photography with camera presets, filter pipelines,
-composition guides, photo albums, challenges, and AI-driven scene
-detection. Players capture, rate, and share photos while completing
-photography quests that reward exploration and artistic skill.
-
-Architecture:
-  PhotographyModeSystem (singleton)
-    |-- CameraPreset, FilterPreset, CompositionGuide, PhotoQuality,
-       PhotoCategory, PhotographyEventKind
-    |-- FilterDefinition, CameraSettings, CompositionOverlay, PhotoEntry,
-       PhotoAlbum, PhotoChallenge, SceneDetection, PhotographyConfig,
-       PhotographyStats, PhotographySnapshot, PhotographyEvent
-    |-- get_photography_mode_system
-
-Core Capabilities:
-  - register_camera_preset / remove_camera_preset / get_camera_preset / list_camera_presets
-  - register_filter / remove_filter / get_filter / list_filters
-  - register_composition_guide / get_composition_guide / list_composition_guides
-  - capture_photo / get_photo / list_photos / delete_photo
-  - create_album / delete_album / get_album / list_albums / add_photo_to_album
-  - register_challenge / remove_challenge / get_challenge / list_challenges
-  - start_challenge / submit_photo / complete_challenge
-  - rate_photo / get_photo_score / get_leaderboard
-  - detect_scene / get_scene_suggestion / get_best_camera_settings
-  - apply_filter / apply_composition_guide
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`PhotographyModeSystem.get_instance` or the module-level
-:func:`get_photography_mode_system` factory.
-"""
+SparkLabs Engine - Photography Mode System"""
 
 from __future__ import annotations
 

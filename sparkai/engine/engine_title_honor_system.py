@@ -1,51 +1,5 @@
 """
-SparkLabs Engine - Title, Honor & Prestige System
-
-Manages player titles, badges, medals, honor points, and prestige ranks.
-Players earn titles through achievements, collect badges for completing
-milestones, receive medals for exceptional accomplishments, accumulate
-honor points through PvP and PvE activities, and progress through
-prestige ranks by resetting progress for permanent bonuses.
-
-Each title can be displayed alongside a player name, badges appear on
-the player profile, medals are showcased in a trophy case, honor points
-contribute to a global honor ranking, and prestige ranks unlock new
-content and multipliers.
-
-Architecture:
-  TitleHonorSystem (singleton)
-    |-- TitleCategory, TitleRarity, BadgeType, MedalTier,
-       HonorSource, PrestigeTier, TitleHonorEventKind
-    |-- TitleDefinition, PlayerTitle, BadgeDefinition, PlayerBadge,
-       MedalDefinition, PlayerMedal, HonorRecord, PrestigeRank,
-       TitleHonorConfig, TitleHonorStats, TitleHonorSnapshot,
-       TitleHonorEvent
-    |-- get_title_honor_system
-
-Core Capabilities:
-  - register_title / remove_title / get_title / list_titles: manage the
-    catalog of obtainable titles with categories and rarities.
-  - award_title / revoke_title / activate_title / get_player_titles:
-    manage titles held by individual players.
-  - register_badge / remove_badge / get_badge / list_badges: manage the
-    badge definition catalog.
-  - award_badge / revoke_badge / get_player_badges: manage player badges.
-  - register_medal / remove_medal / get_medal / list_medals: manage the
-    medal definition catalog.
-  - award_medal / revoke_medal / get_player_medals: manage player medals.
-  - award_honor / spend_honor / get_honor_balance / get_honor_ranking:
-    track honor points and leaderboard rankings.
-  - register_prestige_rank / get_prestige_rank / prestige_player /
-    get_player_prestige: manage prestige progression.
-  - tick / set_config / get_config: lifecycle and tuning.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`TitleHonorSystem.get_instance` or the module-level
-:func:`get_title_honor_system` factory.
-"""
+SparkLabs Engine - Title, Honor & Prestige System"""
 
 from __future__ import annotations
 

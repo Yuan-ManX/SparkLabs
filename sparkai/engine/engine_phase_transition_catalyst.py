@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Phase Transition Catalyst
-
-The EnginePhaseTransitionCatalyst models game systems as matter that can
-exist in different phases - SOLID, LIQUID, GAS, PLASMA - and catalyzes
-transitions between those phases when energy levels cross critical
-thresholds.
-
-This thermodynamic metaphor captures how game systems genuinely evolve:
-a combat system in the SOLID phase is a calm skirmish; as tension rises
-it melts into a LIQUID battle; if energy keeps climbing it vaporizes
-into a GAS of chaotic warfare; and at peak intensity it ionizes into a
-PLASMA of transcendent set-piece moments. Conversely, when energy
-dissipates, the system condenses back through the phases.
-
-Hysteresis is built in: the energy required to melt upward from SOLID
-to LIQUID is higher than the energy at which the system freezes back
-down. This prevents rapid flickering between phases and produces the
-feeling of momentum that real game systems have.
-
-Catalysts are events that inject energy into one or more systems:
-a boss spawn, a moral choice, a time-of-day shift, a player death, a
-faction coup. When a catalyst fires, energy propagates through linked
-systems and may cascade into a chain of phase transitions - the death
-of a king can push the POLITICS system from LIQUID diplomacy into GAS
-civil war, which in turn pushes the COMBAT system upward.
-
-Architecture:
-  CHARGE    ->  THRESHOLD  ->  CATALYZE  ->  CASCADE   ->  DISSIPATE
-  (systems      (detect      (fire         (transitions     (energy
-   accumulate    critical     catalysts     cascade through   decays back
-   energy)       thresholds)  and trigger   linked systems)   toward
-                              transitions)                   equilibrium)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Phase Transition Catalyst"""
 
 from __future__ import annotations
 

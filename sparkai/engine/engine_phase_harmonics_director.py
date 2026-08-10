@@ -1,58 +1,5 @@
 """
-SparkLabs Engine - Phase Harmonics Director
-
-The EnginePhaseHarmonicsDirector models how the various phases of the
-game world - time of day, weather, emotional atmosphere, social mood,
-narrative tension, and ambient energy - form harmonic relationships
-that can be in-tune (producing coherent world-states) or discordant
-(producing tension and instability).
-
-A game world is not a collection of independent systems running in
-parallel - it is a harmonic field where phases resonate with or against
-each other. Dawn and hope resonate harmoniously; a storm and joy are
-discordant. When the world's phases are in harmony, the world feels
-coherent and settled; when they are discordant, the world feels tense
-and on the verge of change.
-
-The director treats each phase dimension as an oscillator with its own
-frequency and amplitude:
-  - Temporal: time of day (dawn, noon, dusk, midnight)
-  - Atmospheric: weather (clear, clouded, storm, mist)
-  - Emotional: ambient mood (hopeful, tense, melancholic, euphoric)
-  - Social: crowd temperament (calm, restless, festive, hostile)
-  - Narrative: story tension (rising, peaking, falling, dormant)
-  - Vital: ambient life energy (low, moderate, high, overflowing)
-
-When phases with compatible frequencies align, they produce consonance -
-the world-state becomes coherent and stable. When incompatible phases
-collide, they produce dissonance - the world-state becomes unstable and
-primed for transition.
-
-The director models five forces:
-  - Tuning: phases are tuned to their base frequencies each cycle
-  - Resonance: compatible phases resonate, amplifying each other
-  - Modulation: external events modulate phase frequencies/amplitudes
-  - Harmonization: resonating phases harmonize into a coherent chord
-  - Dissolution: disharmonious combinations dissolve back to base states
-
-This produces a world where the overall feel emerges from the harmonic
-interaction of its phases, where a sunny festival morning feels
-fundamentally different from a stormy tense midnight, and where the
-world's overall state shapes what kinds of events are likely to occur.
-
-Architecture:
-  TUNE     ->  RESONATE  ->  MODULATE  ->  HARMONIZE ->  DISSOLVE
-  (phases   (compatible   (external    (resonant    (disharmonious
-   tuned to  phases        events       phases form   combinations
-   base      resonate,     modulate     a coherent    dissolve back
-   frequency amplifying    phase        chord that    to base
-   each       each other)  frequencies) shapes the    states,
-   cycle)                                world-state)  creating
-                                                       space for new
-                                                       harmony)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Phase Harmonics Director"""
 
 from __future__ import annotations
 

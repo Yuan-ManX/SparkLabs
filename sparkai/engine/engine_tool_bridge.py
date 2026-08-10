@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Agent Tool Bridge
-
-Bridge layer that exposes engine operations as callable tool functions
-for AI agents. Agents interact with the engine through a unified tool
-protocol rather than direct engine API calls, providing abstraction,
-validation, and safety boundaries.
-
-Architecture:
-  AgentToolBridge
-    |-- ToolRegistry (discoverable tool listing with schemas)
-    |-- PermissionManager (capability-based access control)
-    |-- ResultFormatter (structured output for agent consumption)
-    |-- RateLimiter (prevent runaway agent operations)
-    |-- AuditLogger (record all agent-engine interactions)
-
-Tool Categories:
-  - scene_manipulation: create, modify, arrange scene objects
-  - entity_operations: spawn, delete, transform entities
-  - component_management: add, remove, configure components
-  - resource_handling: load, unload, reference assets
-  - inspector_access: read properties and runtime state
-  - build_control: trigger builds, exports, packaging
-  - playback_control: play, pause, step game simulation
-"""
+SparkLabs Engine - Agent Tool Bridge"""
 
 from __future__ import annotations
 

@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Phase Coherence Stabilizer
-
-The PhaseCoherenceStabilizer holds a population of coupled oscillators
-distributed across the game state and grows coherent rhythmic structure
-out of local synchronization dynamics. Each oscillator carries a
-natural frequency, a current phase, and a coupling strength; the
-stabilizer measures the phase distribution, applies coupling forces
-between connected oscillators, allows controlled drift to preserve
-rhythmic diversity, locks coherent clusters into stable phase
-relationships, and commits the new phase state back into the
-simulation.
-
-This is original SparkLabs work: the stabilizer grows the rhythmic
-fabric of the world from the bottom up rather than imposing a beat
-from the top down. Coherent clusters emerge where coupling overcomes
-drift; controlled desynchrony emerges where drift overcomes coupling.
-The resulting rhythmic structure is never scripted - it is grown from
-the interactions of the oscillators themselves.
-
-Architecture:
-  MEASURE  ->  COUPLE  ->  DRIFT  ->  LOCK  ->  COMMIT
-  (read the   (apply     (let       (freeze    (write the new
-   phase      coupling   controlled coherent    phase state back
-   spread)    forces     drift to   clusters   into the simulation
-              between    preserve   into       and emit events)
-              connected  rhythmic   stable
-              oscillators) diversity) phase
-                                     relations)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Phase Coherence Stabilizer"""
 
 from __future__ import annotations
 

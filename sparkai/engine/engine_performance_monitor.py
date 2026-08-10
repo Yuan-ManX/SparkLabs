@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Performance Monitor Engine
-
-Real-time engine performance profiling and diagnostics. Monitors FPS,
-frame time, draw calls, vertex counts, GPU texture and buffer memory,
-GC pressure, thread count, and system memory usage across multiple
-profiling modes (realtime, sampling, instrumentation, heap analysis).
-
-Architecture:
-  PerformanceMonitorEngine (Singleton)
-    |-- FrameReport            — per-frame performance snapshot
-    |-- MonitorSample          — domain-specific metric sample
-    |-- MonitorAlert           — threshold-based alert with severity
-    |-- ProfileSession         — profiling session orchestrator
-    |-- MonitorDomain (enum)   — monitored performance domains
-    |-- AlertCondition (enum)  — alert trigger conditions
-    |-- MonitorState (enum)    — profiling session lifecycle states
-    |-- ProfilerMode (enum)    — profiling collection strategies
-
-Core Capabilities:
-  - start_profiling: Create a profiling session with mode and domains
-  - stop_profiling: Finalize a profiling session and compute aggregates
-  - record_frame: Capture a single frame's performance metrics
-  - create_alert: Configure a threshold-based performance alert
-  - acknowledge_alert: Mark an alert as acknowledged
-  - get_frame_history: Retrieve recent frame reports
-  - get_active_alerts: List all unacknowledged alerts
-  - get_session: Retrieve a profiling session by id
-  - get_stats: Global engine statistics and health summary
-"""
+SparkLabs Engine - Performance Monitor Engine"""
 
 from __future__ import annotations
 
