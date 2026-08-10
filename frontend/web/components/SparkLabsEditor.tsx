@@ -66,6 +66,8 @@ import EngineInputPanel from './EngineInputPanel';
 import EngineCameraPanel from './EngineCameraPanel';
 import EngineAnimationPanel from './EngineAnimationPanel';
 import EngineScenePanel from './EngineScenePanel';
+import WeatherInteractionPanel from './WeatherInteractionPanel';
+import AgentRefinementPanel from './AgentRefinementPanel';
 import AgentCreativeDirectorPanel from './AgentCreativeDirectorPanel';
 import AgentLiveDebuggerPanel from './AgentLiveDebuggerPanel';
 import AgentGameCodeGeneratorPanel from './AgentGameCodeGeneratorPanel';
@@ -691,6 +693,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'camera-system': return <EngineCameraPanel />;
       case 'animation-controller': return <EngineAnimationPanel />;
       case 'scene-transition': return <EngineScenePanel />;
+      case 'weather-interaction': return <WeatherInteractionPanel />;
+      case 'agent-refinement': return <AgentRefinementPanel />;
       case 'creative-director': return <AgentCreativeDirectorPanel />;
       case 'live-debugger': return <AgentLiveDebuggerPanel />;
       case 'game-code-generator': return <AgentGameCodeGeneratorPanel />;

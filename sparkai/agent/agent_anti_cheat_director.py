@@ -1,43 +1,5 @@
 """
-SparkLabs Agent - AI Anti-Cheat Director
-
-A runtime fusion module that protects game integrity by fusing anomaly
-reasoning over live gameplay telemetry with dynamic enforcement actions.
-The director ingests player behavior signals, detects suspicious patterns
-through statistical anomaly detection, investigates flagged players with
-multi-signal correlation, and applies graduated enforcement actions
-ranging from silent observation to permanent bans.
-
-This module embodies the AI-native principle: anti-cheat is not a static
-rule engine but an intelligent agent that learns normal behavior
-distributions, adapts to new exploit techniques, and reasons about
-false-positive risk before acting.
-
-Architecture:
-  AntiCheatDirector (singleton)
-    |-- PlayerProfile, BehaviorSample, AnomalyAlert, Investigation,
-        EnforcementAction, AppealCase, AntiCheatStats, AntiCheatSnapshot,
-        AntiCheatEvent
-    |-- RiskLevel, BehaviorCategory, AnomalyType, AlertStatus,
-        EnforcementType, InvestigationStatus, AppealStatus,
-        AntiCheatEventKind
-
-Core Capabilities:
-  - register_player / update_player / get_player / list_players /
-    delete_player: player profile management with risk scoring.
-  - ingest_behavior / get_behavior / list_behavior: real-time behavior
-    signal ingestion across movement, combat, economy, and social.
-  - detect_anomalies / get_anomaly / list_anomalies: statistical anomaly
-    detection with confidence scoring and multi-signal correlation.
-  - open_investigation / update_investigation / close_investigation /
-    list_investigations: multi-signal investigation workflow.
-  - apply_enforcement / revoke_enforcement / list_enforcements:
-    graduated enforcement from warning to ban with revocation support.
-  - file_appeal / review_appeal / resolve_appeal / list_appeals:
-    player appeal workflow with human-in-the-loop review.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Agent - AI Anti-Cheat Director"""
 
 from __future__ import annotations
 

@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Approval Engine
-
-Action gate system that controls agent execution of potentially destructive
-operations. Provides trust-tier escalation from auto-approve through manual
-review to unconditional block. Tracks per-session approval state and
-integrates with the recovery engine for automatic escalation.
-
-Architecture:
-  ApprovalEngine
-    |-- TrustTier (AUTO, LOW, MEDIUM, HIGH, CRITICAL, BLOCKED)
-    |-- ApprovalSession (per-session grant tracking)
-    |-- ActionClassifier (maps agent actions to trust tiers)
-    |-- GrantCache (time-limited session approvals)
-    |-- EscalationChain (automatic tier escalation on failure)
-
-Trust Tiers:
-  - AUTO: safe operations auto-approved (read, query, status)
-  - LOW: low-risk mutations with auto-approve (create entity, add component)
-  - MEDIUM: state mutations requiring session grant (modify world, spawn entity)
-  - HIGH: destructive operations requiring explicit user approval (delete world, clear scene)
-  - CRITICAL: engine-level operations requiring elevated approval (reinitialize engine, reset all)
-  - BLOCKED: unconditionally blocked operations (direct file system access, credential exposure)
-
-Usage:
-    engine = ApprovalEngine()
-    result = engine.request_approval("delete_world", context={"world_id": "abc"})
-    if result["approved"]:
-        perform_action()
-"""
+SparkLabs Agent - Approval Engine"""
 
 from __future__ import annotations
 

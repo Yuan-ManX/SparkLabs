@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - AI Natural-Language Analytics Query Engine
-
-A natural-language analytics interface for the SparkLabs AI-native game
-engine. Designers ask questions in plain English (e.g. "What is our D7
-retention by cohort?" or "Show me the top 10 churn risk players") and the
-engine interprets the intent, plans a multi-step query across registered
-data sources, executes it, and returns structured result rows.
-
-This module embodies the AI-native principle: analytics is not a static
-SQL console but an intelligent agent that classifies intent, reasons about
-which data sources and metrics are relevant, decomposes the question into
-an executable plan, and produces interpretable mock results that mirror
-the shape of real telemetry joins.
-
-Architecture:
-  AnalyticsQueryEngine (singleton)
-    |-- NLQuery, QueryResult, SavedQuery, DataSource, MetricDefinition,
-       QueryPlan, AnalyticsQueryStats, AnalyticsQuerySnapshot,
-       AnalyticsQueryEvent
-    |-- QueryIntent, QueryStatus, DataSourceType, ResultFormat,
-       AnalyticsQueryEventKind
-
-Core Capabilities:
-  - submit_query / plan_query / execute_query / get_query / list_queries:
-    natural-language query lifecycle from submission to result.
-  - save_query / get_saved_query / list_saved_queries / delete_saved_query:
-    reusable named query library.
-  - register_data_source / get_data_source / list_data_sources: registry of
-    queryable data sources (telemetry, analytics_db, live_ops, ...).
-  - register_metric / get_metric / list_metrics: catalog of metric
-    definitions keyed by intent.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Agent - AI Natural-Language Analytics Query Engine"""
 
 from __future__ import annotations
 

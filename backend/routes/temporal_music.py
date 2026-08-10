@@ -1,12 +1,5 @@
 """
-SparkLabs Backend - Temporal Director & Music Conductor Routes
-
-REST API endpoints for:
-  - AgentTemporalDirector: time/pacing intelligence and event scheduling
-  - AgentMusicConductor: adaptive music direction
-
-Routes use /temporal-director/ and /music-conductor/ prefixes.
-"""
+SparkLabs Backend - Temporal Director & Music Conductor Routes"""
 
 from __future__ import annotations
 

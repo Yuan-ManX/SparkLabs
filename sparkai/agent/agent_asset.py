@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Asset Pipeline Engine
-
-A comprehensive asset management system for the AI-native game engine.
-Manages game assets (sprites, audio, models, shaders, fonts), tracks
-asset metadata, handles format conversion pipelines, and provides
-asset search and dependency tracking.
-
-Architecture:
-  AssetPipelineEngine
-    |-- AssetRecord (individual asset metadata)
-    |-- AssetCollection (grouped asset sets)
-    |-- AssetDependency (inter-asset dependencies)
-    |-- AssetPipeline (multi-step asset processing)
-    |-- AssetSearchEngine (tag-based asset search)
-"""
+SparkAI Agent - Asset Pipeline Engine"""
 
 from __future__ import annotations
 
