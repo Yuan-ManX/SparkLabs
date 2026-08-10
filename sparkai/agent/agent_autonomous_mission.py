@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Autonomous Mission Planning and Execution System
-
-Autonomous mission planning, decomposition, and execution framework for the
-SparkLabs AI-native game engine. Allows higher-level orchestrators to
-declare high-level goals, decompose them into structured objectives and
-concrete plans, and execute those missions while monitoring progress.
-
-Architecture:
-  AutonomousMissionSystem (Singleton)
-    |-- MissionPriority (urgency/importance tier)
-    |-- MissionStatus (lifecycle state of a mission)
-    |-- MissionObjective (decomposed sub-goal with success criteria)
-    |-- MissionPlan (structured plan of objectives and schedule)
-    |-- Mission (top-level goal container with an optional plan)
-    |-- MissionSystemSnapshot (point-in-time state capture for recovery)
-
-The system is intentionally framework-agnostic: it does not assume a
-specific execution backend. Mission execution is simulated so the
-lifecycle can progress without external dependencies, while still
-honoring objective dependencies and priority ordering.
-"""
+SparkLabs Agent - Autonomous Mission Planning and Execution System"""
 
 from __future__ import annotations
 
