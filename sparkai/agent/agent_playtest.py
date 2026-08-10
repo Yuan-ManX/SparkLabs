@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Automated Playtest System
-
-Headless browser-based playtesting and evaluation framework.
-Runs automated test scenarios against game builds and produces
-structured reports covering playability, performance, and
-design alignment.
-
-Architecture:
-  PlaytestEngine
-    |-- PlaytestSession (individual test run)
-    |-- TestScenario (scripted test sequence)
-    |-- PlaytestReport (evaluation results)
-    |-- MetricCollector (quantitative measurements)
-    |-- PlayabilityChecker (qualitative game feel assessment)
-"""
+SparkAI Agent - Automated Playtest System"""
 
 from __future__ import annotations
 

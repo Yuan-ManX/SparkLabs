@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Player Analytics Engine
-
-Behavioral prediction and gameplay pattern analysis for AI-native
-games. Models player skill progression, engagement curves,
-drop-off prediction, and session quality scoring. Provides data-driven
-insights for game designers to optimize retention, difficulty pacing,
-and content distribution based on real or simulated player telemetry.
-
-Architecture:
-  PlayerAnalyticsEngine
-    |-- SkillModel (Bayesian skill estimation from gameplay data)
-    |-- EngagementTracker (session duration, frequency, intensity)
-    |-- ChurnPredictor (drop-off risk scoring with early warning)
-    |-- SegmentClassifier (player archetype categorization)
-    |-- SessionAnalyzer (per-session quality and frustration metrics)
-    |-- TrendAggregator (cohort-level pattern detection)
-
-Player Archetypes:
-  - COMPLETIONIST: aims for 100% content coverage
-  - SPEEDRUNNER: prioritizes completion time over exploration
-  - EXPLORER: prioritizes discovery and world interaction
-  - SOCIALIZER: values multiplayer and community features
-  - CHALLENGER: seeks difficulty and mastery
-  - CASUAL: values accessibility and low-friction sessions
-"""
+SparkLabs Agent - Player Analytics Engine"""
 
 from __future__ import annotations
 

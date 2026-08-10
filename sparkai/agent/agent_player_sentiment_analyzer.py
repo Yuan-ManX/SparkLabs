@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - Player Sentiment Analyzer
-
-AI-native sentiment analysis engine for the SparkLabs game platform. The
-analyzer ingests gameplay telemetry, chat logs, survey responses, and
-behavioral signals to model player emotion, frustration, engagement, and
-satisfaction in real time. It builds per-player emotion profiles, detects
-frustration events, tracks engagement metrics, and produces AI-driven
-intervention suggestions to protect retention and well-being.
-
-Architecture:
-  PlayerSentimentAnalyzer (singleton)
-    |-- SentimentSample, EmotionProfile, FrustrationEvent, EngagementMetric,
-        InterventionSuggestion, SentimentTimeline, SentimentEvent,
-        SentimentConfig, SentimentStats, SentimentSnapshot
-    |-- SentimentType, EmotionCategory, EngagementLevel, FrustrationLevel,
-        DataSource, InterventionType, TrendDirection
-
-Core Capabilities:
-  - register_sample / get_sample / list_samples / remove_sample: ingest and
-    manage discrete sentiment observations from any data source.
-  - get_or_create_profile / get_profile / list_profiles / update_profile /
-    remove_profile: maintain persistent per-player emotion profiles that
-    aggregate raw samples into dominant emotion, volatility, and trends.
-  - record_frustration / get_frustration_event / list_frustration_events /
-    resolve_frustration: capture frustration spikes with trigger context and
-    track their resolution state.
-  - record_engagement / get_engagement_metric / list_engagement_metrics:
-    record quantitative engagement readings (session duration, APM, social
-    interactions, exploration, progression).
-  - suggest_intervention / register_intervention / get_intervention /
-    list_interventions / remove_intervention: AI-driven recommendations that
-    map a player's emotional state to a concrete intervention type.
-  - generate_timeline / get_sentiment_summary / detect_churn_risk /
-    batch_analyze: analytical views that turn raw signals into actionable
-    insight.
-  - list_events / get_status / get_stats / get_snapshot / get_config /
-    set_config / tick / reset: observability, tuning, and lifecycle control.
-"""
+SparkLabs Agent - Player Sentiment Analyzer"""
 
 from __future__ import annotations
 

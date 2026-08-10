@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - Task Decomposer Engine
-
-Hierarchical task decomposition engine that breaks complex game development
-tasks into manageable subtasks with dependency tracking, parallel execution
-planning, and progress monitoring. Designed for orchestrating multi-agent
-workflows in game creation pipelines.
-
-Architecture:
-  TaskDecomposerEngine (Singleton)
-    |-- TaskNode (hierarchical task tree node with dependencies)
-    |-- DecompositionStrategy (pluggable strategy for task breakdown)
-    |-- ExecutionPlan (ordered task execution plan with parallelism)
-    |-- ProgressTracker (real-time progress monitoring across the tree)
-
-Decomposition Strategies:
-  - TOP_DOWN: break from root goal into sub-tasks
-  - BOTTOM_UP: compose from atomic tasks upward
-  - HYBRID: combine top-down and bottom-up approaches
-  - ADAPTIVE: dynamically adjust based on task complexity
-
-Task Types:
-  - DESIGN, IMPLEMENTATION, TESTING, DEPLOYMENT, REVIEW
-  - ASSET_CREATION, CODE_GENERATION, LEVEL_DESIGN, NARRATIVE
-
-Usage:
-    td = get_task_decomposer()
-    td.initialize()
-
-    plan = td.decompose(
-        goal="Create a 2D platformer game with 3 levels",
-        strategy=DecompositionStrategy.HYBRID,
-        max_depth=4,
-    )
-
-    progress = td.get_progress(plan.plan_id)
-    td.shutdown()
-"""
+SparkLabs Agent - Task Decomposer Engine"""
 
 from __future__ import annotations
 

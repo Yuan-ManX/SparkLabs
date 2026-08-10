@@ -1,17 +1,5 @@
 """
-SparkLabs Agent - Playtest Orchestrator
-
-A singleton system for automated virtual playtesting at scale.
-Simulates thousands of AI-driven player sessions to discover balance
-issues, difficulty spikes, broken progression paths, and gameplay
-friction points before human testing begins.
-
-Architecture:
-  PlaytestOrchestrator (singleton)
-    |-- PlaytestSession (individual virtual player session state)
-    |-- PlaytestArchetype (player behavior model template)
-    |-- SessionReport (per-session findings and metrics)
-"""
+SparkLabs Agent - Playtest Orchestrator"""
 
 from __future__ import annotations
 

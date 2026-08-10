@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Player Modeler Engine
-
-Player behavior modeling system that classifies playstyles, estimates
-skill dimensions, tracks engagement levels, and generates adaptive
-difficulty profiles. The engine analyzes session records to build
-comprehensive player profiles and predict future behavior for
-personalized gameplay experiences.
-
-Architecture:
-  PlayerModelerEngine (Singleton)
-    |-- PlayerProfile (playstyle, skill ratings, engagement history)
-    |-- SessionRecord (actions, decisions, successes, failures)
-    |-- DifficultyProfile (adaptive parameters, adjustment history)
-    |-- PlayerPrediction (predicted actions with confidence)
-
-Core Capabilities:
-  - Create and maintain player profiles with multi-dimensional skill ratings
-  - Record gameplay sessions with detailed action and decision metrics
-  - Classify playstyles based on behavioral patterns
-  - Estimate skill across reaction, strategy, precision, adaptation, persistence
-  - Predict player behavior with confidence scoring
-  - Compute engagement levels to detect flow, boredom, and frustration
-  - Suggest adaptive difficulty adjustments for optimal player experience
-  - Generate behavioral insights from session history
-"""
+SparkLabs Agent - Player Modeler Engine"""
 
 from __future__ import annotations
 

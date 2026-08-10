@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Playtest Simulator
-
-The AgentPlaytestSimulator runs virtual playtests on generated games,
-simulating multiple player archetypes through the game and collecting
-telemetry to validate game design. This closes the AI-native loop:
-AI generates -> AI plays -> AI evaluates -> AI improves.
-
-Architecture:
-  1. VIRTUAL PLAYERS - Multiple archetypes (speedrunner, explorer,
-     completionist, casual) each play the game differently
-  2. SIMULATION ENGINE - Runs each player through the game, generating
-     telemetry frames (position, events, deaths, collects, timing)
-  3. PLAYTEST ANALYZER - Analyzes collected telemetry to evaluate:
-     - Playability: Can players reach the goal?
-     - Balance: Is difficulty appropriate for each archetype?
-     - Engagement: Do players stay engaged throughout?
-     - Completeness: Are all areas reachable?
-     - Pacing: Is the difficulty curve smooth?
-  4. ISSUE DETECTOR - Identifies specific design issues:
-     - Unfair deaths (spikes/traps with no warning)
-     - Dead ends (areas with no escape)
-     - Difficulty spikes (sudden jumps in challenge)
-     - Boring sections (long stretches with no events)
-     - Soft locks (states where player is stuck)
-  5. IMPROVEMENT SUGGESTIONS - Generates actionable fixes for each issue
-
-The simulator produces a PlaytestReport with:
-  - Overall score (0-100)
-  - Per-archetype results
-  - Detected issues with severity
-  - Improvement suggestions
-  - Telemetry statistics
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Playtest Simulator"""
 
 from __future__ import annotations
 

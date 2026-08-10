@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - AI Player Support Assistant
-
-Provides an AI-powered in-game support system that reads player state,
-diagnoses blockers, generates contextual hints, manages support tickets,
-conducts support conversations, and escalates to human agents when needed.
-
-Architecture:
-  PlayerSupportAssistant (singleton)
-    |-- SupportTicket, SupportIssue, SupportHint, SupportConversation,
-        SupportMessage, EscalationCase, SatisfactionSurvey,
-        PlayerSupportStats, PlayerSupportSnapshot, PlayerSupportEvent
-    |-- IssueCategory, TicketStatus, HintType, Priority,
-        EscalationReason, SatisfactionLevel, PlayerSupportEventKind
-
-Core Capabilities:
-  - register_ticket / update_ticket / get_ticket / list_tickets /
-    close_ticket: support ticket lifecycle management.
-  - register_issue / update_issue / get_issue / list_issues /
-    delete_issue: knowledge base of known issues and solutions.
-  - generate_hint: produce contextual hints based on player state
-    and issue diagnosis.
-  - start_conversation / send_message / get_conversation /
-    list_conversations: AI-driven support chat sessions.
-  - escalate_ticket / get_escalation / list_escalations: hand off
-    to human support with full context.
-  - record_satisfaction: collect player feedback after resolution.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`PlayerSupportAssistant.get_instance` or the module-level
-:func:`get_player_support_assistant` factory.
-"""
+SparkLabs Agent - AI Player Support Assistant"""
 
 from __future__ import annotations
 
