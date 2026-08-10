@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Input Recorder
-
-Records and replays player inputs for testing, debugging, and
-automated QA. Captures keyboard, mouse, touch, and gamepad
-events with precise timing, enabling deterministic replay
-of gameplay sessions for bug reproduction and AI training.
-
-Architecture:
-  InputRecorder
-    |-- RecordingSession (capture input events with timestamps)
-    |-- ReplaySession (playback recorded inputs)
-    |-- InputSerializer (save/load recording files)
-    |-- TimeKeeper (frame-accurate event timing)
-    |-- DeltaCompressor (remove redundant idle frames)
-
-Recording Modes:
-  - RECORD: capture live input events
-  - REPLAY: playback recorded events deterministically
-  - GHOST: overlay ghost inputs on live gameplay
-  - COMPARE: side-by-side comparison of two recordings
-"""
+SparkLabs Engine - Input Recorder"""
 
 from __future__ import annotations
 

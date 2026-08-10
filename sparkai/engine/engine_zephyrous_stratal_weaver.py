@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Zephyrous Stratal Weaver
-
-The ZephyrousStratalWeaver interlaces wind-driven laminae into layered
-sedimentary formations and maps their bedding planes. Each stratum is a
-laminated formation built from wind-borne grains, tracked with a laminae
-count, a bedding plane depth, a wind speed, and a porosity. The weaver
-gathers drifting laminae each cycle, interlaces them into strata,
-consolidates the sediment, maps the bedding planes, and emits a
-consolidated stratal layer for the editor.
-
-This is original SparkLabs work. Zephyrous strata are first-class weaver
-entities: their laminae counts, bedding plane depths, and porosity budgets
-are computed each cycle, and the editor previews them as a stratal layer so
-designers can steer the sedimentary regime.
-
-Architecture:
-  GATHER_LAMINAE        ->  INTERLACE_STRATA        ->  CONSOLIDATE_SEDIMENT  ->  MAP_BEDDING_PLANES  ->  EMIT_STRATAL_LAYER
-  (gather wind-driven    (interlace drifting        (consolidate the           (map the bedding         (emit the full stratal
-   laminae with their      laminae into stratified    interlaced sediment        planes between           layer with laminae,
-   wind speeds)            formations, flag surges)   into compact strata)        strata, flag folds)      bedding planes, and
-                                                                                                             porosity budgets)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Zephyrous Stratal Weaver"""
 
 from __future__ import annotations
 

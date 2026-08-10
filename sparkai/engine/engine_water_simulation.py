@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Water Simulation
-
-A 2D water physics simulation system for the SparkLabs AI-native game
-engine. Provides water body definitions, spring-based wave propagation,
-Archimedes buoyancy, fluid drag, surface mesh generation, and particle
-splash effects.
-
-Architecture:
-  EngineWaterSimulation (Singleton)
-    |-- WaterBody         — water region definition with properties
-    |-- WaveSimulator     — wave propagation algorithm
-    |-- BuoyancyCalculator — object floating physics
-    |-- FluidDrag         — drag forces on submerged objects
-    |-- SurfaceRenderer   — surface mesh generation for rendering
-    |-- SplashGenerator   — particle splash effects
-"""
+SparkLabs Engine - Water Simulation"""
 
 from __future__ import annotations
 

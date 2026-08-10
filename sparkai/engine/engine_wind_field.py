@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Wind Field System
-
-A 3D vector wind field simulation for the SparkLabs AI-native game engine.
-It maintains named wind zones (directional, radial, vortex, turbulent),
-samples the composite wind vector at any point in space, and computes
-aerodynamic forces (drag and lift) on objects that have a cross-section
-and aerodynamic coefficient. Unlike the visual weather system, this
-module is a physics-grade wind solver: it blends overlapping zones,
-applies Perlin-style turbulence, generates time-based gusts, and returns
-force vectors that feed into rigid-body, cable, cloth, and particle
-integrators.
-
-Architecture:
-  WindFieldSystem (singleton)
-    |-- WindZone, WindSample, WindFieldStats, WindFieldSnapshot, WindFieldEvent
-    |-- WindZoneKind, WindFieldEventKind
-
-Core Capabilities:
-  - register_zone / get_zone / list_zones / update_zone / remove_zone:
-    wind zone lifecycle with kind, position, radius, direction, strength.
-  - sample_point: composite wind vector at a 3D position, blending all
-    overlapping zones with falloff, turbulence, and gust modulation.
-  - compute_force: aerodynamic drag and lift force on an object given
-    its cross-section area, drag coefficient, and lift coefficient.
-  - step: advance the wind simulation by dt, updating gust envelopes
-    and turbulence phases.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`WindFieldSystem.get_instance` or the module-level
-:func:`get_wind_field` factory.
-"""
+SparkLabs Engine - Wind Field System"""
 
 from __future__ import annotations
 

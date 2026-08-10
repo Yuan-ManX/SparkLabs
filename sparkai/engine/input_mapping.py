@@ -1,18 +1,5 @@
 """
-Input Mapping System - Action-based input with rebindable controls and device abstraction.
-
-Architecture:
-    InputMapping/
-    |-- InputDevice (keyboard, mouse, gamepad enumeration)
-    |-- InputEvent (key press, axis movement, button enumeration)
-    |-- ActionBinding (key/button to action mapping dataclass)
-    |-- ActionContext (scoped action group dataclass)
-    |-- InputMappingSystem (global input orchestration)
-
-Bridges physical input devices to logical game actions for AI-generated games.
-Supports multiple profiles, context-sensitive bindings, dead zones, sensitivity
-curves, and axis-to-digital conversion for flexible control schemes.
-"""
+Input Mapping System - Action-based input with rebindable controls and device abstraction."""
 
 from __future__ import annotations
 

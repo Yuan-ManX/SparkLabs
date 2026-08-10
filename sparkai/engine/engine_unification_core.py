@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Engine Unification Core
-
-The centralized orchestration layer that unifies all SparkLabs game engine
-subsystems into a single cohesive runtime. It synchronizes rendering,
-physics, scene management, audio, ECS, animation, world systems, input/UI,
-performance diagnostics, and resource/asset pipelines through a unified
-control plane.
-
-Architecture:
-  EngineUnificationCore (Singleton)
-    |-- RenderingOrchestrator    (render pipeline, passes, post-processing, GPU, shadows, lighting, skybox, decals, sprites, trails, parallax, particles, materials, shaders)
-    |-- PhysicsOrchestrator      (dynamics, world-2d, materials, collision, ragdoll, constraints, vehicles, water simulation)
-    |-- SceneOrchestrator        (scene manager, tree, stack, transitions, streaming, progressive loading, prefab composer)
-    |-- AudioOrchestrator        (audio system, synthesis, spatial, layering, interactive, procedural, dynamic music)
-    |-- ECSOrchestrator          (ECS, component assembler, entity blueprints, custom object types, game objects, node tree, node path)
-    |-- AnimationOrchestrator    (animation system, curves, trees, controllers, skeleton deformer, camera shake, camera controller, tween system)
-    |-- WorldOrchestrator        (terrain, biome generation, procedural world, procedural dungeon, tilemap, runtime tilemaps, tilesets, tile brushes, fog of war, weather, day/night cycle)
-    |-- InputUIOrchestrator      (input manager, mapping, events, abstraction, input maps, gesture recognizers, UI system, UI layout)
-    |-- PerformanceOrchestrator  (profiler, performance overlay, frame timer, debug draw, console system, telemetry)
-    |-- ResourceOrchestrator     (resource manager, loader, asset pipeline, bundler, streamer, texture atlas, sprite sheet, font system, localization hub, serialization)
-"""
+SparkLabs Engine - Engine Unification Core"""
 
 from __future__ import annotations
 

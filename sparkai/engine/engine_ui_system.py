@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - UI System Engine
-
-A complete UI rendering and management system for the AI-native game engine.
-Provides canvases, widgets, layouts, themes, and event handling with a
-retained-mode widget tree, anchoring, and priority-based event dispatch.
-
-Architecture:
-  UISystemEngine (Singleton, multi-instance by name)
-    |-- UICanvas    — root container with coordinate space and sorting order
-    |-- UIWidget    — base widget with rect, anchor, layout, and visibility
-    |-- UITheme     — color palette, font, spacing, and border presets
-    |-- UIEvent     — typed UI event with position, target, and consumption
-    |-- UIState     — per-canvas interaction state (focus, hover, drag)
-
-Event Flow:
-  Input → UISystemEngine.process_event() → target widget resolution
-  Events bubble through the widget tree via parent-child relationships.
-
-Usage:
-    ui = get_ui_system("main_menu")
-    canvas = ui.create_canvas("main", 1920, 1080, 0)
-    panel = ui.create_widget(canvas.id, WidgetType.PANEL, None,
-                             UIRect(200, 100, 400, 300), LayoutType.VERTICAL)
-    ui.process_event(UIEventType.CLICK, panel.id, (250, 150), {})
-"""
+SparkLabs Engine - UI System Engine"""
 
 from __future__ import annotations
 

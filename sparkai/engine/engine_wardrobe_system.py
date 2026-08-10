@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Wardrobe System
-
-A cosmetic appearance, transmog, and dye system for the SparkLabs AI-native
-game engine. Manages cosmetic skins that override item visuals without
-changing stats, outfit presets that bundle multiple cosmetics, dye channels
-for color customization, and wardrobe slots for per-character appearance
-profiles. Supports unlock-based acquisition, rarity tiers, and seasonal
-cosmetic collections.
-
-Each cosmetic skin maps to an equipment slot (head, chest, legs, etc.) and
-overrides the visual appearance of whatever stat-bearing item is equipped.
-Dyes are applied to specific dye channels on cosmetics to customize colors.
-Outfits bundle a complete set of cosmetics into a single preset that can be
-swapped instantly.
-
-Architecture:
-  WardrobeSystem (singleton)
-    |-- CosmeticRarity, EquipmentSlot, DyeChannel, WardrobeEventKind
-    |-- DyeDefinition, CosmeticSkin, OutfitPreset, WardrobeProfile,
-       WardrobeConfig, WardrobeStats, WardrobeSnapshot, WardrobeEvent
-    |-- get_wardrobe_system
-
-Core Capabilities:
-  - register_dye / remove_dye / get_dye / list_dyes: manage the dye catalog.
-  - register_cosmetic / remove_cosmetic / get_cosmetic / list_cosmetics:
-    manage the cosmetic skin catalog.
-  - register_outfit / remove_outfit / get_outfit / list_outfits: manage
-    outfit presets.
-  - register_profile / remove_profile / get_profile / list_profiles: manage
-    per-character wardrobe profiles.
-  - equip_cosmetic / unequip_cosmetic: equip/unequip cosmetics on profiles.
-  - apply_dye / remove_dye_from_slot: apply/remove dyes on cosmetic slots.
-  - activate_outfit: apply a full outfit preset to a profile.
-  - unlock_cosmetic: mark a cosmetic as unlocked for a profile.
-  - tick: advance time-based features.
-  - set_config / get_config: global tuning.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`WardrobeSystem.get_instance` or the module-level
-:func:`get_wardrobe_system` factory.
-"""
+SparkLabs Engine - Wardrobe System"""
 
 from __future__ import annotations
 

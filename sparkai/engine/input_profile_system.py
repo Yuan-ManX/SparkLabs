@@ -1,20 +1,5 @@
 """
-Input Profile System - Device-aware input profile management for AI-generated games.
-
-Architecture:
-    InputProfileSystem
-    |-- InputDevice (keyboard/mouse, gamepad variants, touch, specialty controllers)
-    |-- ActionType (press, release, hold, double-tap, axis, gesture)
-    |-- DeadZoneMode (none, radial, axial)
-    |-- InputBinding (individual action-to-input mapping)
-    |-- ProfileDefinition (collection of bindings for a device)
-    |-- ProfileExporter (serialize/deserialize profiles)
-    |-- ProfileValidator (check binding conflicts and dead-zone coherence)
-
-Manages player input profiles across different controller types. Each profile
-groups bindings for a specific device, supports auto-configuration via device
-detection, and enables runtime profile switching for multi-controller games.
-"""
+Input Profile System - Device-aware input profile management for AI-generated games."""
 
 from __future__ import annotations
 

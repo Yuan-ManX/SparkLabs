@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Input Manager
-
-Unified input management for keyboard, mouse, touch, and gamepad.
-Tracks input states across frames with press/release/repeat detection.
-Maps raw inputs to named game actions with configurable bindings.
-
-Architecture:
-  InputManager
-    |-- KeyboardState (per-key press/release/hold tracking)
-    |-- MouseState (position, buttons, wheel delta)
-    |-- TouchState (multi-touch with unique identifiers)
-    |-- ActionMap (named actions bound to input combinations)
-    |-- InputAxis (analog axes from keys, mouse, or gamepad)
-
-Input Processing Order per frame:
-  1. Gather raw events from platform
-  2. Update state buffers (press/release transitions)
-  3. Process action bindings (key combos → named actions)
-  4. Compute axis values (smooth interpolation)
-  5. Reset per-frame deltas (wheel, just-pressed flags)
-  6. Invoke action callbacks
-"""
+SparkLabs Engine - Input Manager"""
 
 from __future__ import annotations
 

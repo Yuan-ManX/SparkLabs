@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Undo/Redo Command System
-
-A reversible command execution engine for the SparkLabs AI-native game
-engine editor. Editor operations are captured as ``Command`` objects
-that know how to apply (do) and revert (undo) themselves. Commands can
-be grouped into ``Transaction`` batches for atomic undo, marked with
-a ``MergePolicy`` so that adjacent similar commands (typing, dragging)
-coalesce into a single undo step, and snapshotted via
-``HistorySnapshot`` for time-travel debugging or session persistence.
-
-Architecture:
-  UndoRedoEngine (singleton)
-    |-- Command, CommandBatch, Transaction, HistorySnapshot,
-        CommandHistory, MergePolicy, UndoRedoStats, UndoRedoSnapshot,
-        UndoRedoEvent
-    |-- CommandType, CommandStatus, TransactionState, MergeMode,
-        HistoryScope, UndoRedoEventKind
-
-Core Capabilities:
-  - push_command: register a reversible command on the undo stack
-    (executes the do callback, attempts to merge via the active policy).
-  - begin_transaction / end_transaction / abort_transaction: group
-    commands into atomic batches.
-  - undo / redo / undo_steps / redo_steps / can_undo / can_redo.
-  - clear_history / get_history / get_undo_stack / get_redo_stack.
-  - set_merge_mode / set_history_limit: per-scope configuration.
-  - checkpoint / restore_checkpoint: persistent state snapshots.
-  - get_status / get_snapshot / list_events: observability.
-  - reset: clear all stores and re-seed with default data.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`UndoRedoEngine.get_instance` or the module-level
-:func:`get_undo_redo` factory. All public methods are guarded by the
-re-entrant lock.
-"""
+SparkLabs Engine - Undo/Redo Command System"""
 
 from __future__ import annotations
 
