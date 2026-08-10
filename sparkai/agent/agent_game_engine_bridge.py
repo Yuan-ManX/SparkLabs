@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Game Engine Bridge
-
-Real-time bidirectional bridge between AI agent decision-making and the
-SparkLabs game engine runtime. The Game Engine Bridge enables agents to
-query the current engine state, inject commands into the runtime pipeline,
-subscribe to engine events, and synchronize state snapshots -- all through
-a unified, thread-safe interface.
-
-Architecture:
-  AgentGameEngineBridge
-    |-- CommandPipeline (typed command queue with priority-based dispatch)
-    |-- EventBus (channel-based event subscription and delivery)
-    |-- StateSync (engine state snapshotting with version tracking)
-    |-- SessionManager (agent-engine session lifecycle and statistics)
-    |-- TelemetryChannel (runtime metrics and performance data)
-    |-- DebugChannel (development-time inspection and introspection)
-
-Data Flow:
-  Agent issues command -> Bridge validates and enqueues -> Engine processes
-  -> Engine emits event -> Bridge routes to subscribers -> Agent handles
-  -> Agent queries state -> Bridge snapshots engine data -> Agent analyzes
-
-The bridge supports multiple concurrent agent sessions, each with its own
-command history and event subscription set. All operations are protected
-by a reentrant lock to ensure thread safety in multi-agent environments.
-"""
+SparkLabs Agent - Game Engine Bridge"""
 
 from __future__ import annotations
 

@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - AI Game Director
-
-The creative intelligence that directs the entire AI-native game creation
-lifecycle. Combines a tool-use registry with function calling,
-a simulation engine for world evaluation, and an iteration
-loop for iterative refinement into a single director that can
-autonomously produce, evaluate, and refine games.
-
-Architecture:
-  GameDirector (Singleton)
-    |-- ToolRegistry      -> named tools the director can invoke
-    |-- SimulationEngine  -> simulates playtest sessions for evaluation
-    |-- IterationLoop     -> generate -> evaluate -> refine -> regenerate
-    |-- QualityMetrics    -> engagement, difficulty, variety, coherence
-    |-- StrategySelector  -> chooses generation strategy based on prompt
-
-The director is the primary interface for "make a great game" workflows.
-It wraps the GameContentSynthesizer and GameRuntime, adding judgment,
-iteration, and quality assurance on top of raw content generation.
-
-Usage:
-    director = GameDirector.get_instance()
-    director.initialize()
-    result = director.direct("Design a platformer with double-jump and gem collection")
-    # result.html contains the final playable game
-"""
+SparkLabs Agent - AI Game Director"""
 
 from __future__ import annotations
 

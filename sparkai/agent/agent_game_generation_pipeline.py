@@ -1,31 +1,5 @@
 """
-SparkLabs Agent - Game Generation Pipeline
-
-End-to-end orchestrator that transforms a natural-language game
-specification into a populated engine runtime. The pipeline
-decomposes the spec into ordered phases (design, world, characters,
-quests, dialogue, levels, playtest), invokes the appropriate agent
-capabilities for each phase, records the produced artifacts, and
-exposes live progress tracking.
-
-The pipeline is the canonical entry point for "describe a game, get a
-game" workflows. Each phase is independent and idempotent so that
-failures can be retried in isolation without re-running the whole
-pipeline.
-
-Architecture:
-  GameGenerationPipeline (Singleton)
-    |-- GameSpec (natural-language game specification)
-    |-- GenerationPhase (one stage of the pipeline)
-    |-- PhaseResult (outcome of executing a phase)
-    |-- GenerationRun (one full pipeline execution)
-    |-- GenerationSnapshot (point-in-time state capture)
-
-Phase handlers are callables registered via register_phase_handler.
-When no handler is registered for a phase, the phase is recorded as
-``SKIPPED`` so the pipeline remains robust in environments where not
-every agent subsystem is live.
-"""
+SparkLabs Agent - Game Generation Pipeline"""
 
 from __future__ import annotations
 

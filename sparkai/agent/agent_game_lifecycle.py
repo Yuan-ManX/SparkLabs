@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Game Lifecycle Management
-
-Comprehensive lifecycle management for AI-native games. Tracks the full journey
-of a game from conception through retirement: state transitions across discrete
-lifecycle stages, versioning across deployment channels, milestone recording,
-post-launch evolution, and graceful sunset.
-
-The lifecycle is modeled as a finite state machine over `GameLifecycleState`
-values, with explicit transition rules enforced by `GameLifecycleManager`.
-Versioning follows a promotion ladder (INTERNAL -> CANARY -> STAGING ->
-PRODUCTION) with first-class rollback support.
-
-Architecture:
-  GameLifecycleManager (singleton, RLock-guarded)
-    |-- GameLifecycleState (lifecycle stage of a game)
-    |-- TransitionTrigger  (why a transition occurred)
-    |-- VersionChannel    (deployment channel for a release)
-    |-- LifecyclePhase    (coarse-grained lifecycle phase for analytics)
-    |-- LifecycleConfig   (per-game lifecycle configuration)
-    |-- GameLifecycleRecord (canonical record for a tracked game)
-    |-- StateTransition   (audit entry for a state change)
-    |-- VersionRelease    (audit entry for a version release)
-    |-- LifecycleMetrics  (aggregate metrics across the system)
-    |-- LifecycleSnapshot (point-in-time system snapshot)
-
-Lifecycle Flow:
-  CONCEPTION -> PROTOTYPING -> DEVELOPMENT -> ALPHA -> BETA
-            -> CERTIFICATION -> RELEASED -> LIVE_OPS -> SUNSET -> ARCHIVED
-"""
+SparkLabs Agent - Game Lifecycle Management"""
 
 from __future__ import annotations
 

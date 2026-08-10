@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - Game Fusion
-
-The penultimate agent in the AI-native pipeline. After the Tournament
-selects a champion, the Fusion agent analyzes ALL competing variants,
-identifies each one's strongest dimensions (via the Game Critic), and
-fuses the best parameters from each into a single superior game.
-
-Architecture:
-  GameFusion (Singleton)
-    |-- GameCriticAgent  -> per-dimension quality scores (10 dimensions)
-    |-- Config Extractor -> parses CONFIG JSON from game HTML
-    |-- Fusion Engine    -> merges best parameters by dimension dominance
-
-Fusion strategy:
-  1. Evaluate each variant through the Critic to get dimension scores
-  2. Extract CONFIG parameters from each variant's HTML
-  3. For each parameter domain, select the variant that dominates the
-     relevant dimension (e.g. difficulty params from the variant with
-     the highest "difficulty" score)
-  4. Use the highest composite variant as the base HTML template
-  5. Inject the fused CONFIG into the base template
-  6. Produce a fusion manifest tracing each parameter to its source
-
-Usage:
-    fusion = GameFusion.get_instance()
-    fusion.initialize()
-    result = fusion.fuse(variants, game_title="My Game")
-    # result.html contains the fused game
-    # result.manifest shows which parameters came from which variant
-"""
+SparkLabs Agent - Game Fusion"""
 
 from __future__ import annotations
 

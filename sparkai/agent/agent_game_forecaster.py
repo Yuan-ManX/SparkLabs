@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - Game Forecaster
-
-Predictive game state simulation system for AI-assisted game design
-decisions. Forecasts balance outcomes, player progression curves,
-economy stability, and difficulty pacing before the game is even run.
-Supports multiple simulation depths from quick sketches to full Monte Carlo
-analysis with anomaly detection across game design domains.
-
-Architecture:
-  GameForecaster (Singleton)
-    |-- GameStateSnapshot (discrete state capture for simulation)
-    |-- ForecastResult (aggregated prediction output)
-    |-- BalanceAnalysis (single-parameter balance evaluation)
-    |-- ProgressionSimulator (level-based player advancement modeling)
-    |-- EconomyPredictor (multi-step resource flow simulation)
-    |-- DifficultyEstimator (skill-gated challenge curve mapping)
-    |-- MonteCarloEngine (randomized variable perturbation runner)
-    |-- AnomalyDetector (forecast deviation analysis)
-
-Forecast Domains:
-  BALANCE, PROGRESSION, ECONOMY, DIFFICULTY, RETENTION,
-  MONETIZATION, PERFORMANCE
-
-Simulation Depths:
-  QUICK_SKETCH (single-pass heuristic), STANDARD (iterative model),
-  DEEP_ANALYSIS (multi-phase simulation), MONTE_CARLO (randomized sampling)
-
-Usage:
-    forecaster = get_game_forecaster()
-    result = forecaster.simulate_progression(
-        current_state, parameters, SimulationDepth.STANDARD, TimeHorizon.MID_TERM
-    )
-    balance = forecaster.analyze_balance("damage_multiplier", 1.5, {"min": 0.8, "max": 2.0})
-    anomalies = forecaster.detect_anomalies([result])
-    stats = forecaster.get_stats()
-"""
+SparkLabs Agent - Game Forecaster"""
 
 from __future__ import annotations
 

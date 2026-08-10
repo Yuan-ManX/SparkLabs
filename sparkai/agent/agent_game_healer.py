@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - Game Healer
-
-An AI agent that automatically repairs game quality issues by analyzing
-game HTML, detecting missing features, and injecting self-contained
-JavaScript patches that add the missing capabilities.
-
-This agent closes the AI-native feedback loop:
-  Generate -> Critique -> Heal -> Re-critique
-
-Each healing patch is a self-contained JavaScript block that hooks
-into the existing game runtime (window.gameState, update(), etc.)
-without requiring any changes to the original game code.
-
-Architecture:
-  GameHealer (singleton)
-    |-- SignalExtractor   -> detects missing features from HTML
-    |-- PatchGenerator    -> creates JS patches for each issue
-    |-- PatchApplier      -> injects patches into HTML before </body>
-    |-- HealingSession    -> tracks applied patches and results
-
-Healing Patch Types:
-  - audio:        Procedural Web Audio SFX (collect, hit, jump, gameover)
-  - touch:        Touch-to-keyboard input mapping for mobile
-  - settings:     Settings overlay with volume and pause controls
-  - achievements: Achievement tracking with unlock notifications
-  - save_load:    localStorage persistence for high scores and progress
-  - tutorial:     Contextual hint system for first-time players
-  - difficulty:   CONFIG tuning for enemy speed and lives
-  - pause:        Pause/resume system with overlay
-"""
+SparkLabs Agent - Game Healer"""
 
 from __future__ import annotations
 

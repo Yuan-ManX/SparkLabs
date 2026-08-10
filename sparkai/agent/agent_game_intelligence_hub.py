@@ -1,57 +1,5 @@
 """
-SparkLabs Agent - Game Intelligence Hub
-
-The central AI-native decision-making system that coordinates all agent
-subsystems for autonomous game creation, real-time game analysis, dynamic
-content generation, and continuous optimization. Acts as the brain of the
-SparkLabs game engine, orchestrating analysis, decision-making, content
-creation, and iterative improvement through a unified intelligence layer.
-
-Architecture:
-  GameIntelligenceHub (singleton)
-    |-- IntelligenceMode (operational states)
-    |-- GameAnalysisDimension (analysis categories)
-    |-- DecisionPriority (urgency levels)
-    |-- ContentCategory (content types)
-    |-- GameAnalysis (comprehensive analysis result)
-    |-- DecisionRecord (single decision entry)
-    |-- ContentGenerationRequest (content creation request)
-    |-- ContentGenerationResult (content creation result)
-    |-- IntelligenceSnapshot (complete state snapshot)
-
-Core Capabilities:
-  - analyze_game: Multi-dimensional game analysis across all design axes
-  - make_decision: AI-driven game design decision with confidence scoring
-  - generate_content: Generate game content based on analysis insights
-  - optimize_game: Targeted optimization of specific game dimensions
-  - assess_difficulty: Difficulty analysis and adaptive adjustment
-  - evaluate_pacing: Game pacing and rhythm evaluation
-  - suggest_improvements: Prioritized improvement suggestions
-  - get_status: Comprehensive intelligence hub status report
-  - shutdown: Graceful shutdown of all subsystems
-
-Operational Flow:
-  OBSERVING -> ANALYZING -> DECIDING -> CREATING -> OPTIMIZING -> DEPLOYING
-  The hub continuously cycles through these modes, driven by game state
-  changes, player feedback, and internal optimization triggers.
-
-Usage:
-    hub = get_game_intelligence_hub()
-    hub.initialize()
-    analysis = hub.analyze_game("game_001")
-    decision = hub.make_decision(
-        context={"analysis": analysis.to_dict()},
-        priority=DecisionPriority.HIGH,
-    )
-    content = hub.generate_content(ContentGenerationRequest(
-        game_id="game_001",
-        category=ContentCategory.LEVEL,
-        requirements={"difficulty": "medium", "theme": "forest"},
-    ))
-    improvements = hub.suggest_improvements("game_001")
-    status = hub.get_status()
-    hub.shutdown()
-"""
+SparkLabs Agent - Game Intelligence Hub"""
 
 from __future__ import annotations
 

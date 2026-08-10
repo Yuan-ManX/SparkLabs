@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Game Designer Engine
-
-AI system that generates game mechanics, designs levels, computes
-balance profiles, and constructs core gameplay loops. The engine
-provides systematic tools for creating and tuning game elements
-across multiple mechanic types, difficulty tiers, and balance
-dimensions. It supports analytical balance checking, encounter
-generation, and automated tuning suggestions.
-
-Architecture:
-  GameDesignerEngine (Singleton)
-    |-- GameMechanic (movement, combat, puzzle, resource, etc.)
-    |-- LevelDesign (theme, difficulty, spawn points, objectives)
-    |-- BalanceProfile (metric scaling with tier modifiers)
-    |-- GameLoop (phases, transitions, trigger conditions)
-
-Core Capabilities:
-  - Create game mechanics with typed parameters and balance weights
-  - Design levels with difficulty tiers, spawn points, and objectives
-  - Build balance profiles with scaling factors and tier modifiers
-  - Construct game loops with phase transitions and reward structures
-  - Analyze balance across mechanics for fairness and viability
-  - Suggest tuning adjustments based on balance analysis
-  - Generate encounters by combining mechanics, levels, and balance
-"""
+SparkLabs Agent - Game Designer Engine"""
 
 from __future__ import annotations
 

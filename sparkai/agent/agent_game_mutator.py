@@ -1,31 +1,5 @@
 """
-SparkLabs Agent - Game Mutation Engine
-
-Creates controlled variations of generated games by mutating specific
-design parameters. Enables design-space exploration, A/B testing, and
-iterative refinement without regenerating from scratch.
-
-The mutator parses the game HTML to identify mutable parameters,
-applies targeted mutations (difficulty shifts, theme swaps, mechanic
-tweaks, layout changes), and produces a variant game that can be
-compared against the original.
-
-Mutation strategies:
-  - difficulty_ramp   : scale enemy speed, count, and damage
-  - theme_shift       : swap color palette and background
-  - pace_adjust       : modify gravity, jump strength, move speed
-  - density_change    : alter collectible and enemy counts
-  - gravity_flip      : invert gravity for novel mechanics
-  - palette_invert    : dark-to-light or light-to-dark inversion
-  - size_scale        : scale entity sizes for accessibility
-  - speed_boost       : global time-scale multiplier
-
-Architecture:
-  GameMutator (singleton)
-    |-- ParameterExtractor -> finds mutable values in game HTML
-    |-- MutationStrategy   -> defines how each mutation transforms params
-    |-- VariantBuilder     -> applies mutations and produces variant HTML
-"""
+SparkLabs Agent - Game Mutation Engine"""
 
 from __future__ import annotations
 

@@ -1,44 +1,5 @@
 """
-SparkLabs Agent - Agent Game Forge
-
-AI-powered game creation engine that synthesizes complete playable games from
-natural language descriptions. Combines structured reasoning, world simulation,
-multi-agent orchestration, and code generation into a unified game creation pipeline.
-
-Architecture:
-  AgentGameForge (Singleton)
-    |-- DesignSynthesizer: generates game design documents from prompts
-    |-- MechanicsForge: designs and balances game mechanics
-    |-- WorldArchitect: procedurally generates game worlds
-    |-- CodeSynthesizer: generates production-ready game code
-    |-- AssetCoordinator: manages multi-modal asset generation
-    |-- PlaytestSimulator: simulates gameplay and provides feedback
-    |-- IterationEngine: iteratively refines game based on feedback
-
-Game Creation Pipeline:
-  1. IDEATION: parse natural language into structured game concept
-  2. DESIGN: generate comprehensive game design document
-  3. ARCHITECTURE: design software architecture and component tree
-  4. WORLD: procedurally generate game world and levels
-  5. MECHANICS: design and balance core gameplay mechanics
-  6. CODE: generate production-ready game code
-  7. ASSETS: coordinate multi-modal asset generation
-  8. ASSEMBLY: assemble all components into a playable game
-  9. PLAYTEST: simulate gameplay and gather metrics
-  10. ITERATE: refine based on playtest feedback
-
-Usage:
-    forge = AgentGameForge.get_instance()
-    forge.initialize()
-
-    game = forge.create_game(
-        "A rogue-like dungeon crawler where you play as a time-traveling wizard"
-    )
-    forge.playtest(game.project_id)
-    forge.iterate(game.project_id, feedback="Make combat more strategic")
-    forge.deploy(game.project_id, platform="web")
-    forge.shutdown()
-"""
+SparkLabs Agent - Agent Game Forge"""
 
 from __future__ import annotations
 

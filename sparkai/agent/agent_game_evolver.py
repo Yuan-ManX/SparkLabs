@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Game Evolver
-
-An AI agent that optimizes games through evolutionary iteration. Each
-generation produces multiple mutations of a base game, evaluates them
-with the Game Critic as a fitness function, and selects the best
-variant as the parent for the next generation.
-
-This creates a closed-loop AI optimization system:
-  Base Game -> Mutate -> Critique -> Select Best -> Repeat
-
-The evolver combines the Game Mutator (variation) and Game Critic
-(selection pressure) into a single optimization pipeline that can
-improve game quality across multiple generations without human
-intervention.
-
-Architecture:
-  GameEvolver (singleton)
-    |-- PopulationGenerator -> creates mutated variants
-    |-- FitnessEvaluator   -> scores each variant using GameCritic
-    |-- SelectionStrategy  -> picks the best variant for next gen
-    |-- EvolutionTracker   -> records generation history and stats
-
-Key Design Decisions:
-  - Uses GameCritic.critique_game() as the fitness function
-  - Supports both random mutation and strategy-directed mutation
-  - Tracks score progression across generations
-  - Early termination if no improvement for N generations
-  - Returns the best game found plus full evolution history
-"""
+SparkLabs Agent - Game Evolver"""
 
 from __future__ import annotations
 

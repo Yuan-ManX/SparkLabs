@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Game Design Intelligence
-
-A comprehensive game design intelligence system that analyzes game mechanics,
-brainstorms creative design variations, predicts systemic balance, and explores
-the full game design space through structured reasoning and iteration.
-
-Architecture:
-  GameDesignIntelligence (singleton)
-    |-- DesignConcept (creative game design idea with mechanics and themes)
-    |-- DesignSession (interactive design exploration session)
-    |-- MechanicAnalysis (deep analysis of a single game mechanic)
-    |-- BalancePrediction (predicted balance outcome for systemic interactions)
-    |-- DesignDomain (game design knowledge domains)
-    |-- DesignPhase (creative process phases)
-
-Core Capabilities:
-  - brainstorm_mechanics: Generate creative mechanic variations from seed concepts
-  - analyze_mechanic: Deep analysis of mechanic depth, synergies, and edge cases
-  - predict_balance: Forecast systemic balance from mechanic interactions
-  - explore_design_space: Systematic exploration of combinatorial design possibilities
-  - evaluate_fun_factor: Score game concepts across engagement dimensions
-  - iterate_concept: Generate improved iterations of a design concept
-  - generate_pitch: Create complete game design documents from concepts
-  - compare_concepts: Side-by-side analysis of competing design approaches
-"""
+SparkLabs Agent - Game Design Intelligence"""
 
 from __future__ import annotations
 

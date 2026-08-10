@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - Game Critic
-
-An AI agent that reviews games like a professional critic, analyzing
-fun factor, pacing, difficulty curve, narrative cohesion, visual
-coherence, audio design, accessibility, and replayability. Produces
-qualitative scores, written critique, and actionable recommendations.
-
-Architecture:
-  GameCriticAgent (singleton)
-    |-- ReviewSession, CriterionScore, CritiqueFinding, Recommendation,
-    |   CriticReport, CriticSnapshot, CriticEvent
-    |-- ReviewDimension, ReviewStatus, SeverityLevel, FindingCategory,
-        CriticEventKind
-
-Core Capabilities:
-  - create_session / update_session / get_session / list_sessions:
-    manage review sessions for games or builds.
-  - score_criterion: assign a numeric score (0-10) to a review
-    dimension (FUN, PACING, DIFFICULTY, NARRATIVE, VISUALS, AUDIO,
-    ACCESSIBILITY, REPLAYABILITY, INNOVATION, POLISH).
-  - add_finding: record a qualitative finding with severity and
-    category (POSITIVE, NEGATIVE, SUGGESTION, BUG, OBSERVATION).
-  - add_recommendation: add an actionable recommendation linked to
-    findings.
-  - generate_report: compile all scores, findings, and recommendations
-    into a comprehensive CriticReport with an overall score, verdict,
-    and written summary.
-  - compare_sessions: compare two review sessions side by side,
-    highlighting improvements and regressions.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and lifecycle management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`GameCriticAgent.get_instance` or the module-level
-:func:`get_game_critic` factory.
-"""
+SparkLabs Agent - Game Critic"""
 
 from __future__ import annotations
 
