@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Water System
-
-Fluid body simulation and buoyancy physics for AI-native games.
-Manages water body definitions, flow dynamics, wave simulation,
-and object buoyancy with configurable physical parameters.
-
-Architecture:
-  WaterSystem
-    |-- WaterBodyRegistry (water body type and zone catalog)
-    |-- FlowSimulator (directional flow and current vectors)
-    |-- WaveGenerator (amplitude and frequency wave modeling)
-    |-- BuoyancyEngine (floating and submersion physics)
-
-Water Body Types:
-  - OCEAN, LAKE, RIVER, POND, SWAMP, WATERFALL, FOUNTAIN
-"""
+SparkLabs Engine - Water System"""
 
 from __future__ import annotations
 

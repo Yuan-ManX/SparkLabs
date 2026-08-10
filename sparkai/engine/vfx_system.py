@@ -1,19 +1,5 @@
 """
-VFX System - Visual effects creation, particle management, and runtime simulation.
-
-Architecture:
-    VFXSystem/
-    |-- VFXType (effect category classification)
-    |-- EmissionShape (particle spawn volume shapes)
-    |-- VFXModule (pluggable effect behavior module)
-    |-- VFXDefinition (complete visual effect with modules and parameters)
-    |-- VFXSystem (unified effect lifecycle and runtime orchestrator)
-
-Manages all visual effects including particle bursts, trails, beams, explosions,
-weather, magic, environmental, and screen-space effects. Supports modular
-behavior composition, looping effects, emission rate control, and render layer
-ordering for the full visual pipeline.
-"""
+VFX System - Visual effects creation, particle management, and runtime simulation."""
 
 from __future__ import annotations
 

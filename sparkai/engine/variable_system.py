@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Variable System
-
-Structured variable management for scene-local, global, and
-object-scoped data. Supports typed variables, expression
-evaluation, event-driven change tracking, and structure
-serialization — the data backbone for AI-generated game logic.
-
-Architecture:
-  VariableSystem
-    |-- VariableScope (GLOBAL, SCENE, OBJECT, TEMPORARY)
-    |-- TypedVariable (NUMBER, STRING, BOOLEAN, ARRAY, STRUCT)
-    |-- ExpressionEngine (arithmetic/string/logical evaluation)
-    |-- ChangeTracker (variable mutation history and undo)
-
-Variable Types:
-  - NUMBER: integer or floating point
-  - STRING: text value with interpolation support
-  - BOOLEAN: true/false with toggle operations
-  - ARRAY: ordered collection with push/pop/splice
-  - STRUCT: key-value composite with nested access
-
-Variable Scopes:
-  - GLOBAL: persists across all scenes
-  - SCENE: per-scene, cleared on scene change
-  - OBJECT: per-object, cleared when object destroyed
-  - TEMPORARY: ephemeral, cleared each frame
-
-Usage:
-    vs = VariableSystem()
-    vs.set("player_health", 100, scope=Scope.SCENE)
-    vs.set("high_score", 0, scope=Scope.GLOBAL)
-    vs.increment("coins", 10)
-    result = vs.evaluate("$player_health > 0 and $coins >= 100")
-    vs.watch("player_health", lambda old, new: update_hud(new))
-"""
+SparkLabs Engine - Variable System"""
 from __future__ import annotations
 
 import json

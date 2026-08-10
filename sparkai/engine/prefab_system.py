@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - Prefab System
-
-Prefab instancing and template system for the SparkLabs AI-native
-game engine. Enables defining reusable game object templates with
-property overrides, nested prefab support, variant inheritance,
-and instantiation with automatic resource resolution. AI agents
-use prefabs to compose game scenes from pre-designed building
-blocks.
-
-Architecture:
-  PrefabSystem
-    |-- PrefabTemplate (object definition with default properties)
-    |-- PrefabInstance (runtime instance with override tracking)
-    |-- PropertyOverride (individual overridden value)
-    |-- PrefabVariant (derived prefab with inherited properties)
-    |-- PrefabLibrary (catalog of available prefab templates)
-"""
+SparkLabs Engine - Prefab System"""
 
 from __future__ import annotations
 

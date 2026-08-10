@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Quest System
-
-Quest tracking and state management for AI-native games.
-Supports multi-objective quests with sequential and parallel
-task resolution, dynamic rewards, prerequisite chains, and
-integration with dialogue, inventory, and combat systems.
-
-Architecture:
-  QuestSystem
-    |-- QuestRegistry (quest definition catalog)
-    |-- ObjectiveTracker (per-objective progress state)
-    |-- RewardDispatcher (completion reward resolution)
-    |-- QuestChainManager (prerequisite and sequel management)
-    |-- QuestJournal (player-facing quest log)
-
-Quest States:
-  - NOT_STARTED: unlocked but not yet accepted
-  - ACTIVE: in progress with tracked objectives
-  - COMPLETED: all objectives fulfilled, rewards granted
-  - FAILED: irrevocable failure condition met
-  - ABANDONED: player voluntarily dropped
-"""
+SparkLabs Engine - Quest System"""
 
 from __future__ import annotations
 

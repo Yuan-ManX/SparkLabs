@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Save System
-
-Save/Load system with versioning, migration, and data integrity.
-Handles game state serialization to disk with automatic format
-migration between versions. Supports incremental saves, auto-save
-rotation, and save slot management. Critical for preserving player
-progress and enabling AI agents to checkpoint game states.
-
-Architecture:
-  SaveSystem
-    |-- SaveSlot (metadata, version, timestamp, thumbnail)
-    |-- SaveFormatter (serialization to/from disk format)
-    |-- VersionMigrator (schema upgrade between save versions)
-    |-- AutoSaveManager (interval-based background saving)
-    |-- IntegrityVerifier (checksum validation)
-
-Save Format:
-  - HEADER: magic bytes, version, timestamp, slot name
-  - METADATA: game title, playtime, scene reference
-  - STATE: full scene state with entities and components
-  - CHECKSUM: SHA-256 hash for integrity verification
-"""
+SparkLabs Engine - Save System"""
 
 from __future__ import annotations
 

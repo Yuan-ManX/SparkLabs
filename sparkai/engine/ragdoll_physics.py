@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Ragdoll Physics
-
-Physics-based ragdoll simulation for character death, impact
-reactions, and dynamic body behaviors. Models character skeletons
-as interconnected rigid bodies with configurable joint limits,
-damping, and collision response for realistic character motion.
-
-Architecture:
-  RagdollSystem
-    |-- BoneBody (individual rigid body for a skeleton bone)
-    |-- RagdollPose (bone positions defining a ragdoll state)
-    |-- JointChain (connected bone bodies forming limbs)
-    |-- ImpactSimulator (apply forces and impulses to ragdoll)
-    |-- TransitionBlender (smooth animation-to-ragdoll blending)
-
-Ragdoll States:
-  - IDLE: inactive, no simulation
-  - ACTIVE: fully simulated physics
-  - BLENDING: transitioning between animation and physics
-  - SETTLING: ragdoll settling after impact
-"""
+SparkLabs Engine - Ragdoll Physics"""
 
 from __future__ import annotations
 

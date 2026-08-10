@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Faction Reputation System
-
-Multi-dimensional NPC faction relationship management for
-AI-native game worlds. Tracks player standing across
-faction networks with configurable reputation scales,
-relationship decay, faction hierarchies, and behavioral
-consequences including NPC hostility levels, trade discounts,
-quest availability gating, and dialog options.
-
-Architecture:
-  ReputationSystem
-    |-- FactionRegistry (faction definitions and relationships)
-    |-- ReputationTracker (player-to-faction standing scores)
-    |-- RelationshipGraph (inter-faction ally/enemy networks)
-    |-- ConsequenceEngine (behavioral effects of reputation)
-    |-- DecayManager (reputation drift over time)
-
-Reputation Tiers:
-  - EXALTED: maximum positive standing
-  - HONORED: trusted ally
-  - FRIENDLY: positive standing
-  - NEUTRAL: no bias
-  - UNFRIENDLY: negative bias
-  - HOSTILE: actively opposed
-  - AT_WAR: maximum negative standing
-"""
+SparkLabs Engine - Faction Reputation System"""
 
 from __future__ import annotations
 

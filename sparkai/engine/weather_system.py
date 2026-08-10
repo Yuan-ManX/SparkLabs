@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Weather System
-
-Dynamic environmental weather simulation with atmospheric effects
-that influence gameplay mechanics, visual presentation, and AI
-behavior. Supports configurable weather patterns, transitions,
-zone-specific climates, and gameplay-impacting conditions.
-
-Architecture:
-  WeatherSystem
-    |-- ClimateZone (per-region weather configuration)
-    |-- WeatherPattern (transitional weather state machine)
-    |-- AtmosphericParams (lighting, particle, and audio modifiers)
-    |-- GameplayEffect (weather-driven mechanic modifications)
-    |-- ForecastEngine (predictive weather scheduling)
-
-Weather States:
-  - CLEAR, CLOUDY, RAIN, HEAVY_RAIN, STORM
-  - SNOW, BLIZZARD, FOG, SANDSTORM, WINDY
-"""
+SparkLabs Engine - Weather System"""
 
 from __future__ import annotations
 

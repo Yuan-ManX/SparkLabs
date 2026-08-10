@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Resource Loader
-
-Structured resource preloading and caching system for
-AI-generated game assets. Manages lifetime of textures,
-audio clips, scripts, and data — with LRU eviction,
-reference counting, and format auto-detection.
-
-Architecture:
-  ResourceLoader
-    |-- ResourceHandle (ref-counted wrapper with load state)
-    |-- ResourceCache (LRU eviction with configurable limits)
-    |-- FormatDetector (extension-to-type mapping)
-    |-- LoadQueue (priority-based progressive loading)
-
-Resource States:
-  - UNLOADED: registered but not loaded
-  - LOADING: I/O in progress
-  - LOADED: ready for use
-  - ERROR: loading failed
-
-Resource Types:
-  - TEXTURE (.png, .jpg, .webp, .svg)
-  - AUDIO (.wav, .mp3, .ogg)
-  - SCRIPT (.py, .lua)
-  - DATA (.json, .yaml, .csv, .toml)
-  - FONT (.ttf, .otf, .woff2)
-  - SHADER (.glsl, .wgsl)
-
-Usage:
-    rl = ResourceLoader(max_cache_mb=256)
-    handle = rl.load("assets/player.png", resource_type="texture")
-    rl.acquire("assets/player.png")  # bump ref count
-    rl.release("assets/player.png")  # decrement ref count
-    rl.preload_batch(["assets/bg.png", "assets/jump.wav"])
-    stats = rl.get_cache_stats()
-"""
+SparkLabs Engine - Resource Loader"""
 from __future__ import annotations
 
 import asyncio

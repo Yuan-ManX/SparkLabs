@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - Profiler System
-
-Real-time performance monitoring and instrumentation for the AI-native
-game engine. Tracks rendering, physics, scripting, AI, memory, network,
-audio, animation, UI, and IO subsystems with frame-level granularity.
-
-Architecture:
-  ProfilerSystem
-    |-- ProfilerMonitor (individual metric tracker with stats)
-    |-- ProfilerFrame (aggregated per-frame timing data)
-    |-- Monitor Registry (named monitor management)
-    |-- Frame History (rolling buffer of recent frames)
-
-Monitor Types:
-  - COUNTER: cumulative event counts (draw calls, collisions, etc.)
-  - GAUGE: instantaneous value snapshots (FPS, memory usage)
-  - HISTOGRAM: distribution of values (frame time spread)
-  - TIMER: scoped timing blocks (system step durations)
-  - MEMORY: allocation tracking with peak detection
-"""
+SparkLabs Engine - Profiler System"""
 
 from __future__ import annotations
 

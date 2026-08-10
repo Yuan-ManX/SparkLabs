@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Scene Lifecycle Manager
-
-Central scene manager that handles the complete lifecycle of game
-scenes — asynchronous loading/unloading, transitions, pooling, and
-overlay stacks. Designed for AI-driven scene management where the
-agent needs to construct and swap scenes dynamically.
-
-Architecture:
-  SceneManager
-    |-- ScenePool (pre-loaded reusable scene instances)
-    |-- SceneStack (active scene stack with overlay support)
-    |-- TransitionController (fade/wipe/slide animations)
-    |-- AsyncLoader (background scene loading with progress)
-    |-- SceneGroup (parallel scene group management)
-    |-- EventHooks (on_before_load, on_loaded, on_unload, on_transition)
-
-Transition Types:
-  - NONE: instant swap, no animation
-  - FADE: fade out → load → fade in
-  - WIPE_LEFT/RIGHT/UP/DOWN: directional screen wipe
-  - SLIDE_LEFT/RIGHT/UP/DOWN: slide current scene out, new in
-  - DISSOLVE: pixel dissolve effect from random order
-  - ZOOM_IN/OUT: scale transition with blur
-
-Scene Lifecycle:
-  PENDING    → scene requested but loading has not started
-  LOADING    → asset loading and scene construction in progress
-  LOADED     → scene fully constructed but not yet activated
-  ACTIVE     → scene is receiving Update calls and rendering
-  FROZEN     → scene is still loaded but paused (backgrounded)
-  UNLOADING  → scene destruction in progress
-  UNLOADED   → scene removed from memory
-  POOLED     → scene returned to pool for later reuse
-
-Usage:
-    sm = SceneManager()
-    sm.register_scene("MainMenu", menu_builder)
-    sm.register_scene("Level1", level1_builder)
-    sm.register_scene("Shop", {shop_builder, permanent=False})
-    await sm.load_scene("MainMenu")
-    await sm.transition_to("Level1", transition="FADE", duration=1.5)
-    sm.push_overlay("Shop")
-    sm.pop_overlay()
-"""
+SparkLabs Engine - Scene Lifecycle Manager"""
 
 from __future__ import annotations
 

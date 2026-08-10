@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Performance Profiler
-
-Lightweight instrumentation profiler for real-time performance
-analysis of the AI-native game engine. Tracks frame timing,
-memory allocation, system execution budgets, and bottleneck
-detection — enabling AI agents to optimize game performance
-proactively.
-
-Architecture:
-  Profiler
-    |-- FrameProfiler (per-frame timing with phase breakdown)
-    |-- MemoryTracker (allocation/deallocation with peak tracking)
-    |-- SystemTimer (scoped high-resolution subsystem timing)
-    |-- BottleneckDetector (threshold-based bottleneck identification)
-
-Tracked Metrics:
-  - Frame time (total, min, max, avg, P95, P99)
-  - Engine phase timing (input, step, render, physics, audio, UI)
-  - Memory (allocated, freed, peak, current, object count)
-  - FPS (instantaneous, smoothed, 1% lows)
-  - System call counts per frame
-
-Usage:
-    profiler = Profiler(window_size=120, auto_report=True)
-    with profiler.measure("physics_step"):
-        physics_system.step(dt)
-    profiler.begin_frame()
-    # ... game loop ...
-    profiler.end_frame()
-    report = profiler.generate_report()
-    bottlenecks = profiler.detect_bottlenecks(threshold_ms=16.0)
-"""
+SparkLabs Engine - Performance Profiler"""
 from __future__ import annotations
 
 import math

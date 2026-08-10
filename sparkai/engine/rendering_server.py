@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Rendering Server
-
-Abstract 2D rendering pipeline that decouples rendering logic from
-game mechanics. Accepts draw commands from the engine and outputs
-them to a backing canvas adaptor — enabling seamless targeting of
-different rendering backends (Canvas2D, WebGL, SVG, headless).
-
-Architecture:
-  RenderingServer
-    |-- DrawBatch (sorted command queue per frame)
-    |-- CullingPass (viewport-against-AABB visibility check)
-    |-- ZSorter (stable depth ordering for layered rendering)
-    |-- ViewportTransform (world-space → screen-space matrix)
-    |-- RenderTarget (off-screen buffer for post-processing)
-    |-- CanvasAdaptor (backend interface for actual pixel output)
-
-Draw Command Types:
-  - RECT: filled or stroked rectangle with color/corner radius
-  - CIRCLE: filled circle with center + radius
-  - LINE: single segment with stroke width
-  - POLYGON: arbitrary polygon fill
-  - SPRITE: textured quad from a stored image
-  - TEXT: glyph-based string rendering with font + size
-  - CLEAR: clear entire viewport to a background color
-
-Usage:
-    server = RenderingServer()
-    server.set_viewport(0, 0, 1920, 1080)
-    server.begin_frame()
-    server.draw_rect(10, 10, 100, 50, "red")
-    server.draw_sprite("hero", 200, 100, 64, 64)
-    server.end_frame()
-    server.flush(canvas_context)
-"""
+SparkLabs Engine - Rendering Server"""
 
 from __future__ import annotations
 

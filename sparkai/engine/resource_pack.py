@@ -1,19 +1,5 @@
 """
-Resource Pack System - Resource pack bundling and management engine.
-
-Architecture:
-    ResourcePack/
-    |-- PackType (FULL_GAME, DLC, PATCH, MOD, ASSET_BUNDLE)
-    |-- CompressionLevel (NONE, FAST, DEFAULT, MAXIMUM)
-    |-- EncryptionMethod (NONE, AES128, AES256)
-    |-- ResourceEntry (individual resource metadata)
-    |-- PackDefinition (pack metadata and entry collection)
-    |-- ResourcePack (unified pack lifecycle orchestrator)
-
-Manages resource pack creation, entry management, integrity verification,
-pack merging, version comparison, and content extraction for game
-development pipelines.
-"""
+Resource Pack System - Resource pack bundling and management engine."""
 
 from __future__ import annotations
 

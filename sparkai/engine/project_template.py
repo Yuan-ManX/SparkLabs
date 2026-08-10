@@ -1,18 +1,5 @@
 """
-Project Template - Game genre project templates and instantiation for the AI editor.
-
-Architecture:
-    ProjectTemplate/
-    |-- GameGenre (genre classification enumeration)
-    |-- TemplateAsset (packaged starter asset dataclass)
-    |-- TemplateScene (pre-built scene structure dataclass)
-    |-- ProjectTemplate (complete template definition dataclass)
-    |-- ProjectTemplateSystem (global template orchestration)
-
-Provides the AI game editor with pre-configured project templates for common
-game genres. Each template includes starter scenes, object presets, behavior
-configurations, and asset placeholders that the AI can build upon.
-"""
+Project Template - Game genre project templates and instantiation for the AI editor."""
 
 from __future__ import annotations
 

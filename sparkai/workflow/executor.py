@@ -1,10 +1,5 @@
 """
-SparkAI Workflow - Executor Engine
-
-Executes workflow DAGs with level-based parallel execution,
-named data bindings between nodes, and checkpointing for
-resume-from-failure capability.
-"""
+SparkAI Workflow - Executor Engine"""
 
 from __future__ import annotations
 

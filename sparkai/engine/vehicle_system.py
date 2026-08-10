@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Vehicle System
-
-Physics-based vehicle simulation for AI-native game worlds.
-Models wheel-driven ground vehicles with configurable engine
-power, transmission gearing, suspension dynamics, and tire
-friction. Supports multiple vehicle types from compact cars
-to heavy trucks with distinct handling characteristics.
-
-Architecture:
-  VehicleSystem
-    |-- EngineModel (torque curves, RPM limits, power delivery)
-    |-- TransmissionModel (gear ratios, shift timing, drive type)
-    |-- SuspensionModel (spring rates, damping, ride height)
-    |-- WheelCollider (slip detection, friction curves, braking)
-    |-- CenterOfMass (stability adjustment, roll prevention)
-
-Vehicle Types:
-  - COMPACT: light, quick acceleration, tight turning
-  - SEDAN: balanced handling, moderate speed
-  - SUV: higher ground clearance, slower turning
-  - SPORT: high top speed, stiff suspension
-  - TRUCK: heavy cargo, slow acceleration, wide turning
-"""
+SparkLabs Engine - Vehicle System"""
 
 from __future__ import annotations
 

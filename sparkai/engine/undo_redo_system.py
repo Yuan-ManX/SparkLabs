@@ -1,18 +1,5 @@
 """
-Undo/Redo System - Command history for the AI-native game editor.
-
-Architecture:
-    UndoRedoSystem/
-    |-- EditorCommand (reversible action dataclass)
-    |-- CommandBatch (grouped operations dataclass)
-    |-- CommandHistory (bounded undo/redo stack)
-    |-- UndoRedoSystem (global editor command orchestration)
-
-Provides the undo/redo infrastructure for the AI game editor. Every
-editor mutation — object creation, property changes, scene modifications,
-behavior attachments — is wrapped in a reversible command. Supports
-batched operations, mergeable commands, and bounded history.
-"""
+Undo/Redo System - Command history for the AI-native game editor."""
 
 from __future__ import annotations
 

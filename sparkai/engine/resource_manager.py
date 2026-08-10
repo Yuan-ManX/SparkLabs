@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Resource Manager
-
-Centralized asset loading, caching, and dependency tracking for
-game resources. Manages the lifecycle of textures, audio clips,
-fonts, tilemaps, and custom data files with reference counting
-and lazy loading.
-
-Architecture:
-  ResourceManager
-    |-- ResourceCache (LRU + TTL in-memory storage)
-    |-- ResourceLoader (file I/O with format detection)
-    |-- DependencyGraph (forward/reverse dependency edges)
-    |-- ReferenceCounter (auto-unload on zero references)
-
-Resource Types:
-  - texture: sprites, backgrounds, UI images
-  - audio: sfx clips, music tracks
-  - font: bitmap and TTF fonts
-  - tilemap: tile data and tileset references
-  - data: JSON/YAML configuration files
-  - script: game logic scripts
-
-Usage:
-    rm = ResourceManager(base_path="./assets")
-    rm.load("sprite_player.png", resource_type="texture")
-    tex = rm.get("sprite_player.png")
-    rm.reference("sprite_player.png")  # increment ref count
-    rm.release("sprite_player.png")    # decrement, auto-unload at 0
-"""
+SparkLabs Engine - Resource Manager"""
 
 from __future__ import annotations
 
