@@ -1,19 +1,5 @@
 """
-SparkLabs Agent - Game Intelligence Engine
-
-A comprehensive game intelligence system that provides AI-powered game analysis,
-design optimization, and quality evaluation. It analyzes game states, identifies
-design patterns, suggests improvements, and evaluates game experiences across
-multiple dimensions and player archetypes.
-
-Architecture:
-  GameIntelligenceEngine (singleton)
-    |-- GameStateAnalyzer (analyzes current game state for insights)
-    |-- DesignPatternDetector (detects existing and missing design patterns)
-    |-- QualityEvaluator (evaluates game quality across multiple dimensions)
-    |-- SuggestionGenerator (generates prioritized improvement suggestions)
-    |-- PlayerExperienceModeler (models player experience for different archetypes)
-"""
+SparkLabs Agent - Game Intelligence Engine"""
 
 from __future__ import annotations
 
