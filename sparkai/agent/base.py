@@ -167,6 +167,18 @@ class SparkAgent:
         # and injected into future prompts so the agent compounds competence.
         self._skill_accumulator = None
 
+        # Mission debrief: structured after-action reports produced when an
+        # autonomous run completes. Bounded list plus the latest report.
+        self._run_reports: List[Dict[str, Any]] = []
+        self._max_run_reports: int = 20
+        self._last_run_report: Optional[Dict[str, Any]] = None
+
+        # Emotional intelligence: the agent carries a personality and a live
+        # emotional state (borrowing the shared EmotionEngine) that colors its
+        # reasoning and decisions, bridging AI agency with game-character life.
+        self._emotion_engine = None
+        self._emotion_entity_id = f"agent:{self.id}"
+
         self._load_role_toolsets()
         self._load_role_skills()
 
@@ -178,6 +190,16 @@ class SparkAgent:
 
         # Perception-decision pipeline (game world interaction)
         self._perception_pipeline: Optional[PerceptionDecisionPipeline] = None
+
+        # Counterfactual decision reasoning: evaluates candidate actions
+        # by sandbox simulation before committing, fusing AI planning with
+        # the engine's predictive dynamics.
+        self._counterfactual_reasoner = None
+
+        # Policy committing: after reasoning, applies the strongest candidate
+        # to the LIVE world and records the observable outcome, closing the
+        # observe -> simulate -> commit -> verify -> learn loop.
+        self._policy_committer = None
 
     @property
     def memory(self) -> AgentMemory:
@@ -636,6 +658,19 @@ class SparkAgent:
                 else:
                     step_entry["confidence"] = 0.6
 
+                # Emotional feedback: a successful step lifts confidence-
+                # related affect; a failure adds frustration/stress. The mood
+                # then mildly colors the recorded confidence.
+                try:
+                    if step_entry["confidence"] >= 0.5:
+                        self.apply_emotional_stimulus({"joy": 0.12, "trust": 0.08}, "weak")
+                    else:
+                        self.apply_emotional_stimulus({"frustration": 0.12, "fear": 0.08}, "moderate")
+                    step_entry["confidence"] = self._emotionally_adjust_confidence(step_entry["confidence"])
+                    step_entry["mood"] = self.get_emotional_state().get("mood", "neutral")
+                except Exception:
+                    pass
+
                 # Optional per-step contract verification.
                 if verify_each_step:
                     criteria = step.get("verification_criteria") or (
@@ -710,7 +745,16 @@ class SparkAgent:
                 except Exception as e:
                     logger.debug("Skill learning skipped: %s", e)
 
+            # Mission debrief: produce and store the after-action report.
+            try:
+                report = self.finish_run_report(goal)
+            except Exception as e:
+                logger.debug("Debrief skipped: %s", e)
+                report = None
+
             self.emit("autonomous_complete", {"goal": goal, "iterations": self._iteration_count, "replans": replan_count, "step_refinements": step_refine_count})
+            if report is not None:
+                return {"result": results, "report": report}
             return results
 
         except Exception as e:
@@ -842,6 +886,10 @@ class SparkAgent:
             "tool_count": len(self._tools.list_tools()),
             "refinements": len(self._refinements),
             "accumulated_skills": len(self.get_accumulated_skills(limit=200)),
+            "run_reports": len(self._run_reports),
+            "emotional_state": self._safe_emotional_state(),
+            "counterfactual_decisions": len(self.get_counterfactual_decisions(limit=200)),
+            "policy_commits": len(self.get_policy_commits(limit=200)),
             "context_stats": self._context_mgr.get_statistics(),
             "trajectory_stats": self._trajectory.get_statistics(),
             "perception_enabled": self._perception_pipeline is not None,
@@ -881,6 +929,14 @@ class SparkAgent:
         skill_ctx = self._skill_context()
         if skill_ctx:
             parts.append(skill_ctx)
+
+        emotion_ctx = self._emotion_context()
+        if emotion_ctx:
+            parts.append(emotion_ctx)
+
+        counterfactual_ctx = self._counterfactual_context()
+        if counterfactual_ctx:
+            parts.append(counterfactual_ctx)
 
         game_ctx = self._get_game_context_summary()
         if game_ctx:
@@ -1155,6 +1211,384 @@ class SparkAgent:
         for s in skills:
             lines.append(f"- {s['name']} (maturity={s['maturity']}, uses={s['usage_count']})")
         return "\n".join(lines)
+
+    # === Mission Debrief (After-Action Report) ===
+
+    def synthesize_run_report(self, goal: str) -> Dict[str, Any]:
+        """
+        Compose a structured after-action report for a completed mission.
+
+        The debrief consolidates the goal, plan phase/status, per-step
+        outcomes, verification gates, refinements captured, skills learned,
+        and trajectory statistics into one reviewable record. This gives the
+        editor a single source of truth for auditing an autonomous run.
+        """
+        plan = self._current_plan
+        steps = list(plan.work_plan) if plan else []
+        step_results = list(plan.result) if (plan and plan.result) else []
+
+        verified_steps = sum(1 for s in step_results if s.get("verified"))
+        refined_steps = sum(1 for s in step_results if s.get("refined"))
+        failed_steps = sum(1 for s in step_results if s.get("confidence", 1.0) < 0.5)
+
+        report = {
+            "goal": goal,
+            "plan_id": plan.id if plan else None,
+            "plan_status": plan.status if plan else "none",
+            "plan_phase": plan.phase if plan else "none",
+            "target_end_state": (plan.target_end_state if plan else "")[:300],
+            "step_count": len(steps),
+            "iterations": self._iteration_count,
+            "verified_steps": verified_steps,
+            "refined_steps": refined_steps,
+            "failed_steps": failed_steps,
+            "steps": [
+                {
+                    "step": s.get("step"),
+                    "description": s.get("description", ""),
+                    "confidence": round(float(s.get("confidence", 0.0)), 2),
+                    "verified": s.get("verified", False),
+                    "refined": s.get("refined", False),
+                }
+                for s in step_results
+            ],
+            "verification_gates": list(plan.verification_gates) if plan else [],
+            "refinements": list(self._refinements[-5:]),
+            "skills_learned": [
+                s["name"] for s in self.get_accumulated_skills(limit=10)
+            ],
+            "trajectory_stats": self._trajectory.get_statistics(),
+        }
+        return report
+
+    def finish_run_report(self, goal: str) -> Dict[str, Any]:
+        """Record the debrief for the just-completed run and store it."""
+        report = self.synthesize_run_report(goal)
+        self._last_run_report = report
+        self._run_reports.append(report)
+        if len(self._run_reports) > self._max_run_reports:
+            self._run_reports = self._run_reports[-self._max_run_reports:]
+        self.emit("run_report_ready", {"goal": goal, "step_count": report["step_count"]})
+        return report
+
+    def get_run_reports(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Return the stored mission debriefs (most recent first)."""
+        return list(reversed(self._run_reports[-limit:]))
+
+    # === Emotional Intelligence ===
+
+    def _get_emotion_engine(self):
+        """Lazily resolve the shared emotion/affect engine and seed the agent's
+        personality profile on first use."""
+        if self._emotion_engine is None:
+            from sparkai.agent.agent_emotion_affect import (
+                EmotionEngine, PersonalityTrait,
+            )
+            engine = EmotionEngine.get_instance()
+            engine.set_personality(
+                self._emotion_entity_id,
+                traits={
+                    PersonalityTrait.OPENNESS.value: 0.7,
+                    PersonalityTrait.CONSCIENTIOUSNESS.value: 0.8,
+                    PersonalityTrait.EXTRAVERSION.value: 0.6,
+                    PersonalityTrait.AGREEABLENESS.value: 0.6,
+                    PersonalityTrait.NEUROTICISM.value: 0.3,
+                },
+                baseline_mood=0.2,
+            )
+            self._emotion_engine = engine
+        return self._emotion_engine
+
+    def apply_emotional_stimulus(
+        self,
+        stimulus: Dict[str, float],
+        intensity: str = "moderate",
+    ) -> Dict[str, Any]:
+        """Feed an emotional stimulus (e.g. step outcome) into the agent's
+        emotional state. Returns the updated emotional summary."""
+        from sparkai.agent.agent_emotion_affect import AffectIntensity
+        engine = self._get_emotion_engine()
+        engine.apply_stimulus(
+            self._emotion_entity_id,
+            stimulus,
+            intensity=AffectIntensity(intensity),
+        )
+        return self.get_emotional_state()
+
+    def set_emotion(self, emotion_type: str, value: float) -> Dict[str, Any]:
+        """Directly set an emotion level on the agent."""
+        from sparkai.agent.agent_emotion_affect import EmotionType
+        engine = self._get_emotion_engine()
+        engine.set_emotion(self._emotion_entity_id, EmotionType(emotion_type), value)
+        return self.get_emotional_state()
+
+    def get_emotional_state(self) -> Dict[str, Any]:
+        """Return the agent's current mood and emotion levels in one view."""
+        engine = self._get_emotion_engine()
+        vector = engine.get_emotional_state(self._emotion_entity_id)
+        mood = engine.get_current_mood(self._emotion_entity_id)
+        if not vector:
+            return {
+                "entity_id": self._emotion_entity_id,
+                "mood": mood.get("mood_state", "neutral"),
+                "mood_value": mood.get("mood", 0.0),
+                "emotions": {},
+                "dominant_emotion": "",
+            }
+        return {
+            "entity_id": self._emotion_entity_id,
+            "mood": mood.get("mood_state", "neutral"),
+            "mood_value": mood.get("mood", 0.0),
+            "emotions": vector.get("emotion_values", {}),
+            "dominant_emotion": vector.get("dominant_emotion", ""),
+        }
+
+    def _safe_emotional_state(self) -> Dict[str, Any]:
+        """Return a compact emotional snapshot safe for status serialization."""
+        try:
+            state = self.get_emotional_state()
+        except Exception:
+            return {"mood": "neutral", "emotions": {}}
+        return {
+            "mood": state.get("mood", "neutral"),
+            "emotions": state.get("emotions", {}),
+        }
+
+    def _emotion_context(self) -> str:
+        """Render the agent's mood/personality for prompt injection."""
+        try:
+            state = self.get_emotional_state()
+        except Exception:
+            return ""
+        mood = state.get("mood", "neutral")
+        emotions = state.get("emotions", {})
+        top = sorted(emotions.items(), key=lambda kv: kv[1], reverse=True)[:3]
+        top_str = ", ".join(f"{k}={v:.2f}" for k, v in top) if top else "neutral"
+        return f"Current mood: {mood} (dominant emotions: {top_str})"
+
+    def _emotionally_adjust_confidence(self, base_confidence: float) -> float:
+        """Blend a mood-derived factor into a step's confidence so emotional
+        state mildly colors the agent's self-assessment."""
+        try:
+            state = self.get_emotional_state()
+        except Exception:
+            return base_confidence
+        mood = state.get("mood", "neutral")
+        boost = {
+            "ecstatic": 0.08, "happy": 0.05, "calm": 0.03,
+            "neutral": 0.0, "sad": -0.05, "anxious": -0.06,
+            "angry": -0.04, "depressed": -0.08,
+        }.get(mood, 0.0)
+        return max(0.0, min(1.0, base_confidence + boost))
+
+    # === Counterfactual Decision Reasoning ===
+
+    def _get_counterfactual_reasoner(self):
+        """Lazily resolve the shared counterfactual decision reasoner."""
+        if self._counterfactual_reasoner is None:
+            from sparkai.agent.agent_counterfactual_reasoner import (
+                get_counterfactual_reasoner,
+            )
+            self._counterfactual_reasoner = get_counterfactual_reasoner()
+        return self._counterfactual_reasoner
+
+    def reason_counterfactually(
+        self,
+        candidates: List[Dict[str, Any]],
+        goal: str = "",
+        frames: int = 60,
+        delta_time: float = 1.0 / 60.0,
+    ) -> Dict[str, Any]:
+        """
+        Evaluate a set of candidate actions by sandbox simulation.
+
+        Each candidate is applied to a rolled-back copy of the live world,
+        stepped forward for `frames` frames, measured, and restored. The
+        agent then ranks the candidates and surfaces the recommended path
+        so it can commit only to the strongest course of action. The live
+        world is never permanently altered by this reasoning pass.
+        """
+        reasoner = self._get_counterfactual_reasoner()
+        from sparkai.engine.engine import SparkEngine
+        engine = SparkEngine.get_instance()
+        decision = reasoner.reason(
+            engine, candidates=candidates, goal=goal,
+            frames=frames, delta_time=delta_time,
+        )
+
+        # Persist the reasoning as an episodic memory for later recall.
+        self._memory.remember(
+            content=(
+                f"Counterfactual decision for '{goal or 'unspecified'}': "
+                f"{decision.reasoning}"
+            ),
+            memory_type=MemoryType.EPISODIC,
+            importance=0.7,
+        )
+        self.emit("counterfactual_decision", {
+            "goal": goal,
+            "recommended_id": decision.recommended_id,
+            "recommended_score": decision.recommended_score,
+        })
+        return decision.to_dict()
+
+    def get_counterfactual_decisions(
+        self, limit: int = 10
+    ) -> List[Dict[str, Any]]:
+        """Return recent counterfactual decision logs for diagnostics."""
+        reasoner = self._get_counterfactual_reasoner()
+        return reasoner.list_decisions(limit=limit)
+
+    def _counterfactual_context(self, limit: int = 3) -> str:
+        """Render recent counterfactual insights for prompt injection."""
+        try:
+            reasoner = self._get_counterfactual_reasoner()
+            decisions = reasoner.list_decisions(limit=limit)
+        except Exception:
+            return ""
+        if not decisions:
+            return ""
+        lines = ["Prior counterfactual decisions:"]
+        for d in decisions:
+            lines.append(
+                f"- '{d.get('goal', 'unspecified')}' -> "
+                f"{d.get('recommended_id', 'none')} (score="
+                f"{d.get('recommended_score', 0.0):.2f})"
+            )
+        return "\n".join(lines)
+
+    # === Policy Commit (Close the Loop) ===
+
+    def _get_policy_committer(self):
+        """Lazily resolve the shared policy committer singleton."""
+        if self._policy_committer is None:
+            from sparkai.agent.agent_policy_committer import get_policy_committer
+            self._policy_committer = get_policy_committer()
+        return self._policy_committer
+
+    def commit_policy_action(
+        self,
+        action_type: str,
+        params: Optional[Dict[str, Any]] = None,
+        goal: str = "",
+        description: str = "",
+    ) -> Dict[str, Any]:
+        """
+        Apply a single action to the LIVE game world and record the outcome.
+
+        This is the execution half of the AI-native loop: the agent commits
+        a concrete scene-editing operation (create/destroy/set-property/
+        add-component) and captures the observable world delta. The result
+        is fed back into memory and affect so the agent can calibrate.
+        """
+        from sparkai.engine.engine import SparkEngine
+        engine = SparkEngine.get_instance()
+
+        committer = self._get_policy_committer()
+        record = committer.commit(
+            engine, action_type, params, goal=goal, description=description,
+            source="policy",
+        )
+
+        self._remember_commit(record)
+        self._react_to_commit(record)
+        return record.to_dict()
+
+    def reason_and_commit(
+        self,
+        candidates: List[Dict[str, Any]],
+        goal: str = "",
+        frames: int = 60,
+    ) -> Dict[str, Any]:
+        """
+        Reason counterfactually, then commit the recommended candidate to
+        the live world.
+
+        Combines the sandbox evaluation with live execution so the agent
+        both predicts the strongest course of action and carries it out,
+        recording the prediction-vs-actual fidelity for self-correction.
+        """
+        decision = self.reason_counterfactually(
+            candidates=candidates, goal=goal, frames=frames,
+        )
+
+        from sparkai.engine.engine import SparkEngine
+        engine = SparkEngine.get_instance()
+        committer = self._get_policy_committer()
+
+        record = committer.commit_recommended(engine, decision["id"], goal=goal)
+        if record is None:
+            return {
+                "decision": decision,
+                "commit": None,
+                "message": "No recommended candidate to commit.",
+            }
+
+        self._remember_commit(record)
+        self._react_to_commit(record)
+        return {"decision": decision, "commit": record.to_dict()}
+
+    def commit_latest_decision(self, goal: str = "") -> Optional[Dict[str, Any]]:
+        """Commit the recommended candidate of the most recent decision."""
+        from sparkai.engine.engine import SparkEngine
+        engine = SparkEngine.get_instance()
+        committer = self._get_policy_committer()
+        record = committer.commit_latest_decision(engine, goal=goal)
+        if record is None:
+            return None
+        self._remember_commit(record)
+        self._react_to_commit(record)
+        return record.to_dict()
+
+    def get_policy_commits(self, limit: int = 20) -> List[Dict[str, Any]]:
+        """Return the recent policy commit history for diagnostics."""
+        return self._get_policy_committer().get_commits(limit=limit)
+
+    def _remember_commit(self, record) -> None:
+        """Persist a committed action as episodic memory and a trajectory echo."""
+        try:
+            self._memory.remember(
+                content=(
+                    f"Committed '{record.description or record.action_type}' "
+                    f"(goal={record.goal or 'unspecified'}): "
+                    f"added={record.added_entities} removed={record.removed_entities} "
+                    f"score_delta={record.score_delta:+.2f} actual={record.actual_score:.2f}"
+                ),
+                memory_type=MemoryType.EPISODIC,
+                importance=0.75,
+            )
+        except Exception as exc:
+            logger.debug("Commit memory record skipped: %s", exc)
+
+    def _react_to_commit(self, record) -> None:
+        """Apply affective feedback and emit an event for a committed action."""
+        try:
+            changed = (
+                record.added_entities or record.removed_entities
+                or abs(record.score_delta) > 0.001
+            )
+            if changed and record.actual_score >= 0.5:
+                self.apply_emotional_stimulus(
+                    {"joy": 0.12, "trust": 0.10, "pride": 0.08}, "weak"
+                )
+            elif changed:
+                self.apply_emotional_stimulus(
+                    {"surprise": 0.10, "curiosity": 0.08}, "weak"
+                )
+            else:
+                self.apply_emotional_stimulus(
+                    {"frustration": 0.06, "confusion": 0.05}, "weak"
+                )
+        except Exception as exc:
+            logger.debug("Commit affect skipped: %s", exc)
+
+        self.emit("policy_committed", {
+            "goal": record.goal,
+            "description": record.description,
+            "action_type": record.action_type,
+            "actual_score": record.actual_score,
+            "prediction_delta": record.prediction_delta,
+        })
 
     # === State Persistence ===
 
