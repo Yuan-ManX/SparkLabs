@@ -413,3 +413,176 @@ async def agent_execute_skill(req: ExecuteSkillRequest):
         return JSONResponse({"status": "success", "data": result})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/debriefs")
+async def agent_run_reports(limit: int = 10, agent_name: str = "SparkAgent"):
+    """Return mission debriefs (after-action reports) for completed runs."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "reports": agent.get_run_reports(limit=limit),
+                "total": len(agent.get_run_reports(limit=100)),
+            }
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/debriefs/latest")
+async def agent_latest_run_report(agent_name: str = "SparkAgent"):
+    """Return the most recent mission debrief."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        return JSONResponse({
+            "status": "success",
+            "data": agent._last_run_report,
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+class EmotionRequest(BaseModel):
+    stimulus: dict = {}
+    intensity: str = "moderate"
+    agent_name: str = "SparkAgent"
+
+
+class SetEmotionRequest(BaseModel):
+    emotion_type: str
+    value: float = 0.5
+    agent_name: str = "SparkAgent"
+
+
+@router.get("/systems/emotion")
+async def agent_emotional_state(agent_name: str = "SparkAgent"):
+    """Return the agent's current emotional state and mood."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        return JSONResponse({"status": "success", "data": agent.get_emotional_state()})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/emotion/stimulus")
+async def agent_emotional_stimulus(req: EmotionRequest):
+    """Feed an emotional stimulus into the agent's emotional state."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        state = agent.apply_emotional_stimulus(req.stimulus, req.intensity)
+        return JSONResponse({"status": "success", "data": state})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/emotion/set")
+async def agent_set_emotion(req: SetEmotionRequest):
+    """Directly set an emotion level on the agent."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        state = agent.set_emotion(req.emotion_type, req.value)
+        return JSONResponse({"status": "success", "data": state})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+class CounterfactualRequest(BaseModel):
+    candidates: list = []
+    goal: str = ""
+    frames: int = 60
+    agent_name: str = "SparkAgent"
+
+
+@router.post("/systems/counterfactual")
+async def agent_counterfactual_reason(req: CounterfactualRequest):
+    """Evaluate candidate actions by sandbox simulation and rank them."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        decision = agent.reason_counterfactually(
+            candidates=req.candidates,
+            goal=req.goal,
+            frames=req.frames,
+        )
+        return JSONResponse({"status": "success", "data": decision})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/counterfactual")
+async def agent_counterfactual_history(limit: int = 10, agent_name: str = "SparkAgent"):
+    """Return recent counterfactual decision logs."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "decisions": agent.get_counterfactual_decisions(limit=limit),
+                "total": len(agent.get_counterfactual_decisions(limit=500)),
+            }
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+class PolicyCommitRequest(BaseModel):
+    action_type: str = "create_entity"
+    params: dict = {}
+    goal: str = ""
+    description: str = ""
+    agent_name: str = "SparkAgent"
+
+
+class ReasonAndCommitRequest(BaseModel):
+    candidates: list = []
+    goal: str = ""
+    frames: int = 60
+    agent_name: str = "SparkAgent"
+
+
+@router.post("/systems/policy/commit")
+async def agent_policy_commit(req: PolicyCommitRequest):
+    """Apply an action to the LIVE game world and record the outcome."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        record = agent.commit_policy_action(
+            action_type=req.action_type,
+            params=req.params,
+            goal=req.goal,
+            description=req.description,
+        )
+        return JSONResponse({"status": "success", "data": record})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/policy/reason-and-commit")
+async def agent_policy_reason_and_commit(req: ReasonAndCommitRequest):
+    """Reason counterfactually, then commit the recommended candidate to the live world."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        result = agent.reason_and_commit(
+            candidates=req.candidates,
+            goal=req.goal,
+            frames=req.frames,
+        )
+        return JSONResponse({"status": "success", "data": result})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/policy/commits")
+async def agent_policy_commits(limit: int = 10, agent_name: str = "SparkAgent"):
+    """Return the recent policy commit history."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "commits": agent.get_policy_commits(limit=limit),
+                "total": len(agent.get_policy_commits(limit=500)),
+            }
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
