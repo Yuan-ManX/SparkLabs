@@ -180,7 +180,7 @@ async def kernel_recall(query: str = "", limit: int = 8):
                 "count": len(memories),
                 "memories": [
                     {
-                        "memory_id": m.memory_id,
+                        "memory_id": m.entry_id,
                         "layer": m.layer.value,
                         "namespace": m.namespace,
                         "content": m.content if isinstance(m.content, (str, int, float)) else str(m.content)[:200],
