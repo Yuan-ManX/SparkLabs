@@ -586,3 +586,17 @@ async def agent_policy_commits(limit: int = 10, agent_name: str = "SparkAgent"):
         })
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/calibration")
+async def agent_calibration(agent_name: str = "SparkAgent"):
+    """Return the agent's prediction-calibration reliability profile."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        agent.ingest_commits_for_calibration()
+        return JSONResponse({
+            "status": "success",
+            "data": agent.get_calibration(),
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
