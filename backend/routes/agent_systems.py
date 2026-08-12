@@ -534,6 +534,14 @@ class PolicyCommitRequest(BaseModel):
     agent_name: str = "SparkAgent"
 
 
+class AutonomyRequest(BaseModel):
+    raw_confidence: float = 0.5
+    high_threshold: float = 0.8
+    review_threshold: float = 0.5
+    description: str = ""
+    agent_name: str = "SparkAgent"
+
+
 class ReasonAndCommitRequest(BaseModel):
     candidates: list = []
     goal: str = ""
@@ -598,5 +606,21 @@ async def agent_calibration(agent_name: str = "SparkAgent"):
             "status": "success",
             "data": agent.get_calibration(),
         })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/calibration/assess-autonomy")
+async def agent_assess_autonomy(req: AutonomyRequest):
+    """Gate an intended action by the agent's calibrated confidence."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        result = agent.assess_autonomy(
+            raw_confidence=req.raw_confidence,
+            high_threshold=req.high_threshold,
+            review_threshold=req.review_threshold,
+            description=req.description,
+        )
+        return JSONResponse({"status": "success", "data": result})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
