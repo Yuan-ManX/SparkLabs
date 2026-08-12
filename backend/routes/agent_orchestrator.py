@@ -396,8 +396,14 @@ async def orchestrator_optimize_performance(request: Request):
 async def orchestrator_platforms():
     """List available deployment platforms."""
     try:
-        from sparkai.agent.agent_ai_native_orchestrator import Platform
-        platforms = [{"name": p.value, "label": p.name} for p in Platform]
+        platforms = [
+            {"name": "web", "label": "Web"},
+            {"name": "desktop", "label": "Desktop"},
+            {"name": "mobile", "label": "Mobile"},
+            {"name": "console", "label": "Console"},
+            {"name": "vr", "label": "Virtual Reality"},
+            {"name": "cloud", "label": "Cloud Streaming"},
+        ]
         return JSONResponse({"status": "success", "data": platforms})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
