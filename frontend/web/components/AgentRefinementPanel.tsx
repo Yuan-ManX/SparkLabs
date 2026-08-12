@@ -55,11 +55,12 @@ export default function AgentRefinementPanel() {
   const [pcParams, setPcParams] = useState('{"name":"Sentry","properties":{"score":12}}');
   const [pcResult, setPcResult] = useState<any>(null);
   const [pcCommits, setPcCommits] = useState<any[]>([]);
+  const [calib, setCalib] = useState<any>(null);
   const [failure, setFailure] = useState('');
   const [adjustment, setAdjustment] = useState('');
   const [outcome, setOutcome] = useState('');
   const [message, setMessage] = useState('');
-  const [tab, setTab] = useState<'refinements' | 'skills' | 'debrief' | 'emotion' | 'counterfactual' | 'policy' | 'state'>('refinements');
+  const [tab, setTab] = useState<'refinements' | 'skills' | 'debrief' | 'emotion' | 'counterfactual' | 'policy' | 'calibration' | 'state'>('refinements');
 
   const fetchRefinements = useCallback(async () => {
     try {
@@ -170,6 +171,16 @@ export default function AgentRefinementPanel() {
     } catch (e) {}
   }, []);
 
+  const fetchCalibration = useCallback(async () => {
+    try {
+      const r = await fetch(`${API_BASE}/calibration`);
+      if (r.ok) {
+        const d = await r.json();
+        setCalib(d.data);
+      }
+    } catch (e) {}
+  }, []);
+
   const runReasonAndCommit = async () => {
     setMessage('');
     try {
@@ -225,7 +236,8 @@ export default function AgentRefinementPanel() {
     fetchEmotion();
     fetchCounterfactual();
     fetchPolicyCommits();
-  }, [fetchRefinements, fetchState, fetchSkills, fetchDebriefs, fetchEmotion, fetchCounterfactual, fetchPolicyCommits]);
+    fetchCalibration();
+  }, [fetchRefinements, fetchState, fetchSkills, fetchDebriefs, fetchEmotion, fetchCounterfactual, fetchPolicyCommits, fetchCalibration]);
 
   const triggerLearn = async () => {
     setMessage('');
@@ -302,6 +314,7 @@ export default function AgentRefinementPanel() {
           <button onClick={() => setTab('emotion')} className={`px-3 py-1.5 rounded text-sm ${tab === 'emotion' ? 'bg-[#00d4ff] text-black' : 'bg-[#1a1a2e] text-[#ccc]'}`}>Emotional State</button>
           <button onClick={() => setTab('counterfactual')} className={`px-3 py-1.5 rounded text-sm ${tab === 'counterfactual' ? 'bg-[#00d4ff] text-black' : 'bg-[#1a1a2e] text-[#ccc]'}`}>Counterfactual</button>
           <button onClick={() => setTab('policy')} className={`px-3 py-1.5 rounded text-sm ${tab === 'policy' ? 'bg-[#00d4ff] text-black' : 'bg-[#1a1a2e] text-[#ccc]'}`}>Policy Commit</button>
+          <button onClick={() => setTab('calibration')} className={`px-3 py-1.5 rounded text-sm ${tab === 'calibration' ? 'bg-[#00d4ff] text-black' : 'bg-[#1a1a2e] text-[#ccc]'}`}>Calibration</button>
           <button onClick={() => setTab('state')} className={`px-3 py-1.5 rounded text-sm ${tab === 'state' ? 'bg-[#00d4ff] text-black' : 'bg-[#1a1a2e] text-[#ccc]'}`}>Agent State</button>
         </div>
       </div>
@@ -609,6 +622,73 @@ export default function AgentRefinementPanel() {
               </ul>
             )}
           </div>
+        </div>
+      ) : tab === 'calibration' ? (
+        <div className={cardCls}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-[#ccc]">Prediction Calibration</h3>
+            <button onClick={fetchCalibration} className="bg-[#00d4ff] text-black px-3 py-1.5 rounded text-sm font-medium hover:bg-[#00b8e0] transition-colors">
+              Refresh
+            </button>
+          </div>
+          <p className="text-xs text-[#888] mb-4">How faithfully the agent's sandbox simulations forecast real outcomes. Confidence from trustworthy predictions is trusted; drifted predictions are tempered.</p>
+          {calib?.profile ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="bg-[#12121f] border border-[#2a2a4a] rounded p-3">
+                  <div className="text-[10px] text-[#888] mb-1">Samples</div>
+                  <div className="text-xl font-semibold text-[#00d4ff]">{calib.profile.sample_count}</div>
+                </div>
+                <div className="bg-[#12121f] border border-[#2a2a4a] rounded p-3">
+                  <div className="text-[10px] text-[#888] mb-1">Reliability</div>
+                  <div className="text-sm font-semibold text-[#6ee7b7] capitalize">{calib.profile.reliability_rating}</div>
+                </div>
+                <div className="bg-[#12121f] border border-[#2a2a4a] rounded p-3">
+                  <div className="text-[10px] text-[#888] mb-1">Confidence ×</div>
+                  <div className="text-xl font-semibold text-[#a29bfe]">{calib.profile.confidence_multiplier?.toFixed(2)}</div>
+                </div>
+                <div className="bg-[#12121f] border border-[#2a2a4a] rounded p-3">
+                  <div className="text-[10px] text-[#888] mb-1">Mean Error</div>
+                  <div className="text-xl font-semibold text-[#fbbf24]">{calib.profile.mean_absolute_error?.toFixed(3)}</div>
+                </div>
+              </div>
+
+              {Object.keys(calib.profile.action_type_reliability || {}).length > 0 && (
+                <div>
+                  <div className="text-xs text-[#888] mb-2">Reliability by Action Type</div>
+                  <div className="space-y-2">
+                    {Object.entries(calib.profile.action_type_reliability).map(([at, r]) => (
+                      <div key={at} className="flex items-center gap-2">
+                        <span className="text-xs text-[#ccc] w-40">{at}</span>
+                        <div className="flex-1 h-2 bg-[#1a1a2e] rounded overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-[#00d4ff] to-[#a29bfe]" style={{ width: `${Math.min(100, (r as number) * 100)}%` }} />
+                        </div>
+                        <span className="text-xs text-[#9fe8ff] w-10 text-right">{(r as number).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {calib?.samples && calib.samples.length > 0 && (
+                <div>
+                  <div className="text-xs text-[#888] mb-2">Recent Calibration Samples</div>
+                  <ul className="space-y-2">
+                    {calib.samples.map((s: any, i: number) => (
+                      <li key={i} className="border border-[#2a2a4a] rounded p-2 bg-[#12121f] text-[10px]">
+                        <span className="text-[#6ee7b7]">{s.action_type}</span>
+                        <span className="text-[#888]"> · predicted {s.predicted_score != null ? s.predicted_score.toFixed(2) : 'n/a'}</span>
+                        <span className="text-[#888]"> · actual {s.actual_score.toFixed(2)}</span>
+                        <span className="text-[#fbbf24]"> · Δ {s.error.toFixed(2)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-xs text-[#666] py-4 text-center">No calibration data yet. Commit reasoned actions to build a reliability profile.</div>
+          )}
         </div>
       ) : (
         <div className={cardCls}>
