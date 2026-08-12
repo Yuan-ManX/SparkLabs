@@ -672,6 +672,11 @@ class SparkAgent:
                     else:
                         self.apply_emotional_stimulus({"frustration": 0.12, "fear": 0.08}, "moderate")
                     step_entry["confidence"] = self._emotionally_adjust_confidence(step_entry["confidence"])
+                    # Prediction calibration: temper step confidence by the
+                    # agent's measured simulation reliability, so decisions
+                    # trust past fidelity rather than raw optimism.
+                    step_entry["confidence"] = self.calibrate_confidence(step_entry["confidence"])
+                    step_entry["calibrated"] = True
                     step_entry["mood"] = self.get_emotional_state().get("mood", "neutral")
                 except Exception:
                     pass
@@ -1596,6 +1601,46 @@ class SparkAgent:
         been faithful.
         """
         return self._get_prediction_calibrator().calibrate(raw_confidence)
+
+    def assess_autonomy(
+        self,
+        raw_confidence: float,
+        high_threshold: float = 0.8,
+        review_threshold: float = 0.5,
+        description: str = "",
+    ) -> Dict[str, Any]:
+        """
+        Gate an intended action by calibrated confidence.
+
+        Maps a raw confidence onto an autonomy level:
+          - act        : calibrated confidence is high enough to proceed
+                         without human review;
+          - review     : confidence is moderate, proceed but flag for review;
+          - halt       : confidence is low, do not proceed autonomously.
+
+        This makes prediction calibration actionable: the agent's measured
+        reliability decides how much autonomy it grants its own intentions.
+        """
+        calibrated = self.calibrate_confidence(float(raw_confidence))
+        if calibrated >= high_threshold:
+            level = "act"
+        elif calibrated >= review_threshold:
+            level = "review"
+        else:
+            level = "halt"
+
+        outcome = {
+            "description": description,
+            "raw_confidence": round(float(raw_confidence), 4),
+            "calibrated_confidence": round(calibrated, 4),
+            "calibration_delta": round(calibrated - float(raw_confidence), 4),
+            "autonomy_level": level,
+        }
+        try:
+            self.emit("autonomy_assessed", outcome)
+        except Exception:
+            pass
+        return outcome
 
     def ingest_commits_for_calibration(self) -> int:
         """
