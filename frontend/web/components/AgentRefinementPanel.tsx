@@ -56,6 +56,9 @@ export default function AgentRefinementPanel() {
   const [pcResult, setPcResult] = useState<any>(null);
   const [pcCommits, setPcCommits] = useState<any[]>([]);
   const [calib, setCalib] = useState<any>(null);
+  const [auRaw, setAuRaw] = useState('0.75');
+  const [auDesc, setAuDesc] = useState('commit recommended world change');
+  const [auResult, setAuResult] = useState<any>(null);
   const [failure, setFailure] = useState('');
   const [adjustment, setAdjustment] = useState('');
   const [outcome, setOutcome] = useState('');
@@ -180,6 +183,26 @@ export default function AgentRefinementPanel() {
       }
     } catch (e) {}
   }, []);
+
+  const assessAutonomy = async () => {
+    setMessage('');
+    const raw = parseFloat(auRaw);
+    if (isNaN(raw) || raw < 0 || raw > 1) { setMessage('Confidence must be 0..1'); return; }
+    try {
+      const r = await fetch(`${API_BASE}/calibration/assess-autonomy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw_confidence: raw, description: auDesc }),
+      });
+      const d = await r.json();
+      if (r.ok) {
+        setAuResult(d.data);
+        setMessage(`Autonomy: ${d.data?.autonomy_level}`);
+      } else {
+        setMessage(d.message || 'Failed');
+      }
+    } catch (e: any) { setMessage(e.message); }
+  };
 
   const runReasonAndCommit = async () => {
     setMessage('');
@@ -685,6 +708,45 @@ export default function AgentRefinementPanel() {
                   </ul>
                 </div>
               )}
+
+              <div className="border-t border-[#2a2a4a] pt-4">
+                <div className="text-xs text-[#888] mb-2">Autonomy Gate (calibrated confidence)</div>
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    value={auRaw}
+                    onChange={(e) => setAuRaw(e.target.value)}
+                    placeholder="raw confidence 0..1"
+                    className="w-32 bg-[#12121f] border border-[#2a2a4a] rounded px-3 py-1.5 text-xs text-[#ccc] outline-none"
+                  />
+                  <input
+                    value={auDesc}
+                    onChange={(e) => setAuDesc(e.target.value)}
+                    placeholder="intended action"
+                    className="flex-1 bg-[#12121f] border border-[#2a2a4a] rounded px-3 py-1.5 text-xs text-[#ccc] outline-none"
+                  />
+                  <button onClick={assessAutonomy} className="bg-[#00d4ff] text-black px-3 py-1.5 rounded text-sm font-medium hover:bg-[#00b8e0] transition-colors">
+                    Assess
+                  </button>
+                </div>
+                {auResult && (
+                  <div className="bg-[#1a1a2e] rounded p-3">
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-[#888]">Autonomy:</span>
+                      <span className={`font-semibold ${
+                        auResult.autonomy_level === 'act' ? 'text-[#6ee7b7]'
+                        : auResult.autonomy_level === 'review' ? 'text-[#fbbf24]'
+                        : 'text-[#f87171]'
+                      }`}>{auResult.autonomy_level.toUpperCase()}</span>
+                    </div>
+                    <div className="text-xs text-[#888] mt-1">
+                      raw <span className="text-[#ccc]">{auResult.raw_confidence.toFixed(2)}</span>
+                      {' → '}calibrated <span className="text-[#ccc]">{auResult.calibrated_confidence.toFixed(2)}</span>
+                      {' '}<span className="text-[#9fe8ff]">(Δ {auResult.calibration_delta >= 0 ? '+' : ''}{auResult.calibration_delta.toFixed(2)})</span>
+                    </div>
+                    {auResult.description && <div className="text-[10px] text-[#666] mt-1">{auResult.description}</div>}
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="text-xs text-[#666] py-4 text-center">No calibration data yet. Commit reasoned actions to build a reliability profile.</div>
