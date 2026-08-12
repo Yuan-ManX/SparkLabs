@@ -509,7 +509,7 @@ class PrefabSystem:
 
         return {"success": True, "instances": instances, "count": len(instances)}
 
-    def get_instance(self, instance_id: str) -> Optional[Dict[str, Any]]:
+    def get_prefab_instance(self, instance_id: str) -> Optional[Dict[str, Any]]:
         """Get a prefab instance by ID."""
         instance = self._instances.get(instance_id)
         return instance.to_dict() if instance else None
