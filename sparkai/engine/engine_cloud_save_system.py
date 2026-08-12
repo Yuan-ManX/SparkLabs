@@ -1958,7 +1958,7 @@ class CloudSaveSystem:
             if player_id:
                 results = [e for e in results if e.player_id == player_id]
             results.sort(key=lambda e: e.timestamp, reverse=True)
-            if limit > 0:
+            if limit is not None and limit > 0:
                 results = results[:limit]
             return results
 
