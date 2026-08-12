@@ -201,6 +201,11 @@ class SparkAgent:
         # observe -> simulate -> commit -> verify -> learn loop.
         self._policy_committer = None
 
+        # Prediction calibration: turns the policy committer's prediction-vs-
+        # actual history into a reliability profile and a calibrated confidence,
+        # so the agent can self-correct how much it trusts its own simulations.
+        self._prediction_calibrator = None
+
     @property
     def memory(self) -> AgentMemory:
         return self._memory
@@ -890,6 +895,7 @@ class SparkAgent:
             "emotional_state": self._safe_emotional_state(),
             "counterfactual_decisions": len(self.get_counterfactual_decisions(limit=200)),
             "policy_commits": len(self.get_policy_commits(limit=200)),
+            "calibration": self._get_prediction_calibrator().get_statistics(),
             "context_stats": self._context_mgr.get_statistics(),
             "trajectory_stats": self._trajectory.get_statistics(),
             "perception_enabled": self._perception_pipeline is not None,
@@ -1492,6 +1498,7 @@ class SparkAgent:
 
         self._remember_commit(record)
         self._react_to_commit(record)
+        self._record_calibration(record)
         return record.to_dict()
 
     def reason_and_commit(
@@ -1526,6 +1533,7 @@ class SparkAgent:
 
         self._remember_commit(record)
         self._react_to_commit(record)
+        self._record_calibration(record)
         return {"decision": decision, "commit": record.to_dict()}
 
     def commit_latest_decision(self, goal: str = "") -> Optional[Dict[str, Any]]:
@@ -1538,11 +1546,66 @@ class SparkAgent:
             return None
         self._remember_commit(record)
         self._react_to_commit(record)
+        self._record_calibration(record)
         return record.to_dict()
 
     def get_policy_commits(self, limit: int = 20) -> List[Dict[str, Any]]:
         """Return the recent policy commit history for diagnostics."""
         return self._get_policy_committer().get_commits(limit=limit)
+
+    # === Prediction Calibration (Self-Model of Prediction Fidelity) ===
+
+    def _get_prediction_calibrator(self):
+        """Lazily resolve the shared prediction calibrator singleton."""
+        if self._prediction_calibrator is None:
+            from sparkai.agent.agent_prediction_calibrator import (
+                get_prediction_calibrator,
+            )
+            self._prediction_calibrator = get_prediction_calibrator()
+        return self._prediction_calibrator
+
+    def _record_calibration(self, record) -> None:
+        """
+        Feed a committed action into the prediction calibrator.
+
+        Only commits that carried a sandbox prediction produce a sample;
+        the rest are safely ignored. This is where the agent learns how
+        faithfully its simulations forecast reality.
+        """
+        try:
+            self._get_prediction_calibrator().record_commit(record.to_dict())
+        except Exception as exc:
+            logger.debug("Calibration record skipped: %s", exc)
+
+    def get_calibration(self) -> Dict[str, Any]:
+        """Return the agent's prediction-calibration reliability profile."""
+        calibrator = self._get_prediction_calibrator()
+        profile = calibrator.get_profile()
+        return {
+            "profile": profile.to_dict(),
+            "statistics": calibrator.get_statistics(),
+            "samples": calibrator.get_samples(limit=20),
+        }
+
+    def calibrate_confidence(self, raw_confidence: float) -> float:
+        """
+        Scale a raw confidence by the agent's measured prediction reliability.
+
+        Lets downstream decision-making discount confidence that has
+        historically over-predicted outcomes, and trust confidence that has
+        been faithful.
+        """
+        return self._get_prediction_calibrator().calibrate(raw_confidence)
+
+    def ingest_commits_for_calibration(self) -> int:
+        """
+        Re-sync the calibrator from the full policy-commit history.
+
+        Useful after a restore or on first load so the reliability profile
+        reflects all recorded commits, not just those observed live.
+        """
+        commits = self._get_policy_committer().get_commits(limit=500)
+        return self._get_prediction_calibrator().record_many(commits)
 
     def _remember_commit(self, record) -> None:
         """Persist a committed action as episodic memory and a trajectory echo."""
