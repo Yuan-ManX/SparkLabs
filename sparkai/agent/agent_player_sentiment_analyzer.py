@@ -927,9 +927,9 @@ class PlayerSentimentAnalyzer:
         resolved_filter: str = "",
     ) -> List[FrustrationEvent]:
         resolved_flag: Optional[bool] = None
-        if resolved_filter.lower() == "true":
+        if resolved_filter and resolved_filter.lower() == "true":
             resolved_flag = True
-        elif resolved_filter.lower() == "false":
+        elif resolved_filter and resolved_filter.lower() == "false":
             resolved_flag = False
 
         result: List[FrustrationEvent] = []
