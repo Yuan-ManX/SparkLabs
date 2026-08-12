@@ -1144,6 +1144,35 @@ class AINativeGameOrchestrator:
             except Exception:
                 pass
 
+    def get_operation_history(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """Return the most recent orchestration events, newest first."""
+        history = list(self._event_history)
+        return history[-limit:][::-1]
+
+    def list_running_games(self) -> List[Dict[str, Any]]:
+        """Return a summary of active and recent development sessions."""
+        sessions = []
+        for session in self._sessions.values():
+            data = session.to_dict() if hasattr(session, "to_dict") else {"id": session.id}
+            data["is_active"] = (
+                self._active_session is not None
+                and getattr(session, "id", None) == getattr(self._active_session, "id", None)
+            )
+            sessions.append(data)
+        return sessions
+
+    def get_performance_metrics(self, game_id: Optional[str] = None) -> Dict[str, Any]:
+        """Return the orchestrator's performance metrics, optionally scoped to a game."""
+        metrics = self._metrics.to_dict()
+        metrics["uptime"] = (
+            time.time() - self._start_time if self._start_time else 0.0
+        )
+        if game_id and game_id in self._game_cache:
+            metrics["scoped_game"] = self._game_cache[game_id]
+        elif game_id:
+            metrics["scoped_game"] = None
+        return metrics
+
     def shutdown(self) -> None:
         """Shutdown the orchestrator."""
         self._mode = OrchestratorMode.IDLE
