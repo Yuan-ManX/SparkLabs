@@ -755,7 +755,7 @@ async def prefab_list():
         if not ps._initialized:
             ps.initialize()
         prefabs = ps.list_prefabs()
-        return JSONResponse({"status": "success", "data": [p.to_dict() for p in prefabs]})
+        return JSONResponse({"status": "success", "data": [p.to_dict() if hasattr(p, "to_dict") else p for p in prefabs]})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -878,7 +878,7 @@ async def input_action_list():
         if not ias._initialized:
             ias.initialize()
         actions = ias.list_actions()
-        return JSONResponse({"status": "success", "data": [a.to_dict() for a in actions]})
+        return JSONResponse({"status": "success", "data": [a.to_dict() if hasattr(a, "to_dict") else a for a in actions]})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -959,7 +959,7 @@ async def shader_material_list():
         if not sms._initialized:
             sms.initialize()
         materials = sms.list_materials()
-        return JSONResponse({"status": "success", "data": [m.to_dict() for m in materials]})
+        return JSONResponse({"status": "success", "data": [m.to_dict() if hasattr(m, "to_dict") else m for m in materials]})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -973,7 +973,7 @@ async def shader_material_shaders():
         if not sms._initialized:
             sms.initialize()
         shaders = sms.list_shaders()
-        return JSONResponse({"status": "success", "data": [s.to_dict() for s in shaders]})
+        return JSONResponse({"status": "success", "data": [s.to_dict() if hasattr(s, "to_dict") else s for s in shaders]})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
