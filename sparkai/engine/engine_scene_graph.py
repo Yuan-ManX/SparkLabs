@@ -268,6 +268,82 @@ class Scene:
     def to_dict(self) -> Dict[str, Any]:
         return {"scene_id": self.scene_id, "name": self.name, "root_node_id": self.root_node_id, "state": self.state.name, "nodes": {nid: n.to_dict() for nid, n in self.nodes.items()}, "layers": {lid: l.to_dict() for lid, l in self.layers.items()}, "created_at": self.created_at}
 
+class SpatialGrid:
+    """
+    Uniform grid spatial index for efficient proximity queries.
+
+    The world is divided into uniform cells of a fixed size. Each entity
+    is placed in the cell corresponding to its world position. Range queries
+    only need to check cells that overlap the query region.
+    """
+
+    def __init__(self, cell_size: float = 100.0) -> None:
+        self._cell_size = cell_size
+        self._cells: Dict[Tuple[int, int], Set[str]] = {}
+        self._node_cells: Dict[str, Tuple[int, int]] = {}
+
+    @property
+    def cell_size(self) -> float:
+        return self._cell_size
+
+    def insert(self, node_id: str, x: float, y: float) -> None:
+        """Insert or update a node's position in the grid."""
+        self.remove(node_id)
+        cx, cy = self._world_to_cell(x, y)
+        cell_key = (cx, cy)
+        if cell_key not in self._cells:
+            self._cells[cell_key] = set()
+        self._cells[cell_key].add(node_id)
+        self._node_cells[node_id] = cell_key
+
+    def remove(self, node_id: str) -> None:
+        """Remove a node from the grid."""
+        cell_key = self._node_cells.pop(node_id, None)
+        if cell_key is not None:
+            cell = self._cells.get(cell_key)
+            if cell:
+                cell.discard(node_id)
+                if not cell:
+                    del self._cells[cell_key]
+
+    def query_radius(self, x: float, y: float, radius: float) -> List[str]:
+        """Return all node IDs within `radius` of point (x, y)."""
+        results: List[str] = []
+        min_cx, min_cy = self._world_to_cell(x - radius, y - radius)
+        max_cx, max_cy = self._world_to_cell(x + radius, y + radius)
+        for cx in range(min_cx, max_cx + 1):
+            for cy in range(min_cy, max_cy + 1):
+                cell = self._cells.get((cx, cy))
+                if cell:
+                    results.extend(cell)
+        return results
+
+    def query_box(self, min_x: float, min_y: float, max_x: float, max_y: float) -> List[str]:
+        """Return all node IDs within the bounding box."""
+        results: List[str] = []
+        min_cx, min_cy = self._world_to_cell(min_x, min_y)
+        max_cx, max_cy = self._world_to_cell(max_x, max_y)
+        for cx in range(min_cx, max_cx + 1):
+            for cy in range(min_cy, max_cy + 1):
+                cell = self._cells.get((cx, cy))
+                if cell:
+                    results.extend(cell)
+        return results
+
+    def get_statistics(self) -> Dict[str, Any]:
+        total_nodes = sum(len(s) for s in self._cells.values())
+        avg_per_cell = total_nodes / len(self._cells) if self._cells else 0
+        return {
+            "cell_size": self._cell_size,
+            "total_cells": len(self._cells),
+            "total_indexed_nodes": total_nodes,
+            "avg_nodes_per_cell": round(avg_per_cell, 2),
+        }
+
+    def _world_to_cell(self, x: float, y: float) -> Tuple[int, int]:
+        return (int(x / self._cell_size), int(y / self._cell_size))
+
+
 class SceneGraphSystem:
 
     _DEFAULT_LAYERS: Tuple[Tuple[str, int], ...] = (
@@ -290,6 +366,9 @@ class SceneGraphSystem:
         self._initialized: bool = False
         self._stats: Dict[str, int] = {"nodes_created": 0, "nodes_removed": 0,
             "components_added": 0, "transforms_updated": 0, "ticks": 0, "signals_emitted": 0}
+        # Spatial index: uniform grid for efficient proximity queries.
+        # Synced from world transforms whenever nodes are updated.
+        self._spatial_grid: SpatialGrid = SpatialGrid(cell_size=100.0)
         if seed_sample:
             self._seed_sample_scene()
 
@@ -979,9 +1058,78 @@ class SceneGraphSystem:
             active = self.get_active_scene()
             return {"initialized": self._initialized, "scene_count": len(self._scenes), "active_scene": active.name if active else None, "active_scene_id": self._active_scene_id, "prefab_count": len(self._prefabs), "handler_count": len(self._handlers)}
 
-    def get_stats(self) -> Dict[str, int]:
+    def sync_spatial_index(self) -> int:
+        """
+        Rebuild the spatial grid from all node world transforms in the
+        active scene. Returns the number of nodes indexed.
+        """
         with self._lock:
-            return dict(self._stats)
+            self._spatial_grid = SpatialGrid(cell_size=self._spatial_grid.cell_size)
+            count = 0
+            if self._active_scene_id and self._active_scene_id in self._scenes:
+                scene = self._scenes[self._active_scene_id]
+                for node in scene.nodes.values():
+                    pos = node.world_transform.position
+                    self._spatial_grid.insert(node.node_id, pos[0], pos[1])
+                    count += 1
+            return count
+
+    def query_radius(self, x: float, y: float, radius: float) -> List[Dict[str, Any]]:
+        """
+        Return all nodes within `radius` of point (x, y) in the active scene.
+        Uses the spatial grid for efficient candidate selection.
+        """
+        with self._lock:
+            candidates = self._spatial_grid.query_radius(x, y, radius)
+            if not self._active_scene_id or self._active_scene_id not in self._scenes:
+                return []
+            scene = self._scenes[self._active_scene_id]
+            results: List[Dict[str, Any]] = []
+            radius_sq = radius * radius
+            for nid in candidates:
+                node = scene.nodes.get(nid)
+                if node:
+                    pos = node.world_transform.position
+                    dx = pos[0] - x
+                    dy = pos[1] - y
+                    if dx * dx + dy * dy <= radius_sq:
+                        results.append(node.to_dict())
+            return results
+
+    def query_box(self, min_x: float, min_y: float, max_x: float, max_y: float) -> List[Dict[str, Any]]:
+        """Return all nodes within a bounding box in the active scene."""
+        with self._lock:
+            candidates = self._spatial_grid.query_box(min_x, min_y, max_x, max_y)
+            if not self._active_scene_id or self._active_scene_id not in self._scenes:
+                return []
+            scene = self._scenes[self._active_scene_id]
+            results: List[Dict[str, Any]] = []
+            for nid in candidates:
+                node = scene.nodes.get(nid)
+                if node:
+                    pos = node.world_transform.position
+                    if min_x <= pos[0] <= max_x and min_y <= pos[1] <= max_y:
+                        results.append(node.to_dict())
+            return results
+
+    def find_nearest(self, x: float, y: float, max_radius: float = 1000.0) -> Optional[Dict[str, Any]]:
+        """Find the nearest node to a point in the active scene."""
+        nodes = self.query_radius(x, y, max_radius)
+        if not nodes:
+            return None
+        return min(nodes, key=lambda n: (n.get("world_transform", {}).get("position", [0, 0, 0])[0] - x) ** 2 +
+                   (n.get("world_transform", {}).get("position", [0, 0, 0])[1] - y) ** 2)
+
+    def get_spatial_statistics(self) -> Dict[str, Any]:
+        """Return spatial index statistics."""
+        with self._lock:
+            return self._spatial_grid.get_statistics()
+
+    def get_stats(self) -> Dict[str, Any]:
+        with self._lock:
+            stats = dict(self._stats)
+            stats["spatial_grid"] = self._spatial_grid.get_statistics()
+            return stats
 
     def ai_generate_scene(self, description: str, scene_name: str = "GeneratedScene") -> Optional[str]:
         """Generate a scene tree from a natural language description.
