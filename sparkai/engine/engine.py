@@ -433,6 +433,9 @@ class SparkEngine:
         self._register_default_logic_handlers()
         # World checkpointing / predictive simulation sandbox
         self._checkpoint_service: WorldCheckpointService = get_world_checkpoint_service()
+        # World rules: declarative game-design rules validated every update.
+        # The Agent reasons about violations and can add/remove rules.
+        self._world_rules = None
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -1007,6 +1010,34 @@ class SparkEngine:
         if stats:
             self._frame_count = stats.frame_count
 
+    def get_world_rules(self):
+        """Lazily resolve the shared WorldRulesSystem singleton."""
+        if self._world_rules is None:
+            from sparkai.engine.engine_world_rules import get_world_rules_system
+            self._world_rules = get_world_rules_system()
+        return self._world_rules
+
+    def validate_world_rules(self):
+        """
+        Validate the live world against all enabled game-design rules.
+
+        Returns the list of violations found this pass. The Agent's goal
+        discoverer and stewardship cycle can read these violations to turn
+        rule breaks into actionable goals.
+        """
+        return self.get_world_rules().validate(self)
+
+    def get_scene_graph(self):
+        """Return the scene graph system."""
+        return self._scene_graph
+
+    def update_scene_graph(self) -> int:
+        """
+        Sync the spatial index from all node world transforms in the active
+        scene. Returns the number of nodes indexed.
+        """
+        return self._scene_graph.sync_spatial_index()
+
     def get_status(self) -> Dict[str, Any]:
         try:
             return self._build_status()
@@ -1226,6 +1257,7 @@ class SparkEngine:
                 for sid, rt in self._scene_logic_runtimes.items()
             },
             "checkpoints": self._checkpoint_service.get_statistics(),
+            "world_rules": self.get_world_rules().get_statistics(),
         }
 
     @property
