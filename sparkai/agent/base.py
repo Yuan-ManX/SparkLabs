@@ -206,6 +206,32 @@ class SparkAgent:
         # so the agent can self-correct how much it trusts its own simulations.
         self._prediction_calibrator = None
 
+        # Proactive autonomous initiative: the agent observes the live world,
+        # discovers candidate goals, forecasts the future state, and gates
+        # each planned action by calibrated confidence before committing.
+        # This turns the reactive loop into a self-directed one.
+        self._goal_discoverer = None
+        self._world_forecaster = None
+
+        # World stewardship cycle: the capstone orchestrator that fuses
+        # forecast, goal discovery, counterfactual reasoning, autonomy gate,
+        # policy commit, and calibration into one self-directed pass. This is
+        # the AI-native heartbeat that lets the agent tend the world without
+        # waiting for instructions.
+        self._world_steward = None
+
+        # Dream cycle: offline experience consolidation. When the world is
+        # quiet, the agent replays trajectories, refinements, and emotions,
+        # synthesizing creative insights and skill hypotheses that real-time
+        # reasoning would miss. This is the generative counterpart to the
+        # reactive loop.
+        self._dream_cycle = None
+
+        # Causal atlas: a causal graph recording cause-effect relationships
+        # between world events. Enables deep "why" reasoning — tracing
+        # backward to root causes and forward to predicted effects.
+        self._causal_atlas = None
+
     @property
     def memory(self) -> AgentMemory:
         return self._memory
@@ -588,6 +614,7 @@ class SparkAgent:
         max_replans: int = 2,
         verify_each_step: bool = False,
         self_refine: bool = False,
+        autonomy_gate: bool = False,
     ) -> Any:
         """
         Run the full autonomous loop: Plan -> Execute -> Reflect -> Verify.
@@ -600,6 +627,12 @@ class SparkAgent:
         criteria and the recorded confidence reflects that check. With
         self_refine=True failed steps capture a durable refinement lesson
         (failure -> adjustment) that informs later reasoning.
+
+        With autonomy_gate=True each planned step is run through the
+        Autonomy Gate: steps whose calibrated confidence falls below the
+        review threshold are skipped and flagged for human review rather
+        than executed blindly. This makes prediction calibration actionable
+        inside the autonomous loop.
         """
         plan = ExecutionPlan(goal=goal, max_iterations=max_iterations or self.max_iterations)
         self._current_plan = plan
@@ -644,6 +677,47 @@ class SparkAgent:
 
                 step_result = await self.think(step_description)
 
+                # Autonomy Gate: before executing the planned action, gate it
+                # by calibrated confidence. A "halt" verdict skips the action
+                # and flags the step for human review instead of executing it
+                # blindly. This is where prediction calibration becomes
+                # actionable inside the autonomous loop.
+                autonomy_verdict = None
+                if autonomy_gate and step.get("action"):
+                    prior_confidence = float(step.get("confidence", 0.6))
+                    try:
+                        prior_confidence = self._emotionally_adjust_confidence(prior_confidence)
+                    except Exception:
+                        pass
+                    assessment = self.assess_autonomy(
+                        raw_confidence=prior_confidence,
+                        description=f"Step {self._iteration_count}: {step_description}",
+                    )
+                    autonomy_verdict = assessment.get("autonomy_level")
+                    if autonomy_verdict == "halt":
+                        step_entry = {
+                            "step": self._iteration_count,
+                            "description": step_description,
+                            "result": "skipped: autonomy gate halted (low calibrated confidence)",
+                            "confidence": assessment.get("calibrated_confidence", 0.0),
+                            "calibrated": True,
+                            "autonomy": "halt",
+                            "autonomy_assessment": assessment,
+                            "halting_for_review": True,
+                        }
+                        results.append(step_entry)
+                        if self_refine:
+                            step_refine_count += 1
+                            self.record_refinement(
+                                failure=f"Step {self._iteration_count} halted by autonomy gate: {step_description}",
+                                adjustment=(
+                                    "Calibrated confidence too low to act autonomously; "
+                                    "narrow scope, gather more evidence, or request review."
+                                ),
+                                outcome=f"calibrated_confidence={assessment.get('calibrated_confidence', 0.0):.2f}",
+                            )
+                        continue
+
                 action_name = step.get("action")
                 if action_name:
                     action_result = await self.act(action_name, step.get("params", {}))
@@ -654,6 +728,8 @@ class SparkAgent:
                     "description": step_description,
                     "result": str(step_result)[:200] if step_result else None,
                 }
+                if autonomy_verdict is not None:
+                    step_entry["autonomy"] = autonomy_verdict
 
                 if isinstance(step_result, dict) and step_result.get("error"):
                     errors.append(str(step_result.get("error"))[:100])
@@ -762,7 +838,7 @@ class SparkAgent:
                 logger.debug("Debrief skipped: %s", e)
                 report = None
 
-            self.emit("autonomous_complete", {"goal": goal, "iterations": self._iteration_count, "replans": replan_count, "step_refinements": step_refine_count})
+            self.emit("autonomous_complete", {"goal": goal, "iterations": self._iteration_count, "replans": replan_count, "step_refinements": step_refine_count, "autonomy_gated": autonomy_gate, "halted_steps": sum(1 for r in results if r.get("autonomy") == "halt")})
             if report is not None:
                 return {"result": results, "report": report}
             return results
@@ -901,6 +977,9 @@ class SparkAgent:
             "counterfactual_decisions": len(self.get_counterfactual_decisions(limit=200)),
             "policy_commits": len(self.get_policy_commits(limit=200)),
             "calibration": self._get_prediction_calibrator().get_statistics(),
+            "goal_discovery": self._get_goal_discoverer().get_statistics(),
+            "world_forecast": self._get_world_forecaster().get_statistics(),
+            "world_steward": self._get_world_steward().get_statistics(),
             "context_stats": self._context_mgr.get_statistics(),
             "trajectory_stats": self._trajectory.get_statistics(),
             "perception_enabled": self._perception_pipeline is not None,
@@ -1651,6 +1730,317 @@ class SparkAgent:
         """
         commits = self._get_policy_committer().get_commits(limit=500)
         return self._get_prediction_calibrator().record_many(commits)
+
+    # === Proactive Autonomous Initiative ===
+
+    def _get_goal_discoverer(self):
+        """Lazily resolve the shared goal discoverer singleton."""
+        if self._goal_discoverer is None:
+            from sparkai.agent.agent_goal_discoverer import get_goal_discoverer
+            self._goal_discoverer = get_goal_discoverer()
+        return self._goal_discoverer
+
+    def _get_world_forecaster(self):
+        """Lazily resolve the shared world forecaster singleton."""
+        if self._world_forecaster is None:
+            from sparkai.agent.agent_world_forecaster import get_world_forecaster
+            self._world_forecaster = get_world_forecaster()
+        return self._world_forecaster
+
+    def discover_goals(
+        self,
+        engine: Any = None,
+        max_goals: int = 6,
+    ) -> List[Dict[str, Any]]:
+        """
+        Observe the live world and return ranked candidate goals.
+
+        The agent inspects the engine's current scene state, derives goals
+        from emergent conditions (empty scenes, score imbalance, low
+        variety, inert worlds), and tempers each goal's confidence by its
+        measured prediction reliability. This is the proactive entry point
+        of the autonomous initiative: the agent generates its own intent
+        from observation rather than waiting for a user-supplied goal.
+        """
+        if engine is None:
+            engine = self._resolve_engine()
+        if engine is None:
+            return []
+        calibrator = self._get_prediction_calibrator()
+        goals = self._get_goal_discoverer().discover(
+            engine, calibrator=calibrator, max_goals=max_goals,
+        )
+        try:
+            self.emit("goals_discovered", {"count": len(goals), "top": goals[0].title if goals else ""})
+        except Exception:
+            pass
+        return [g.to_dict() for g in goals]
+
+    def forecast_world(
+        self,
+        engine: Any = None,
+        horizon_frames: int = 60,
+        delta_time: float = 1.0 / 60.0,
+    ) -> Dict[str, Any]:
+        """
+        Project the live world forward using the engine's predictive
+        simulation and return a compact forecast.
+
+        The simulation is rolled back, so the live world is never mutated.
+        The forecast surfaces predicted problems (entity loss, score
+        decline, inertness) and opportunities (growth, score gain), which
+        feed goal discovery and autonomy gating.
+        """
+        if engine is None:
+            engine = self._resolve_engine()
+        if engine is None:
+            return {"error": "no_engine"}
+        forecast = self._get_world_forecaster().forecast(
+            engine, horizon_frames=horizon_frames, delta_time=delta_time,
+        )
+        try:
+            self.emit("world_forecast", {
+                "stable": forecast.stable,
+                "problems": forecast.predicted_problems,
+                "opportunities": forecast.predicted_opportunities,
+            })
+        except Exception:
+            pass
+        return forecast.to_dict()
+
+    def pursue_discovered_goal(
+        self,
+        goal_id: str,
+        engine: Any = None,
+        max_iterations: int = 6,
+    ) -> Dict[str, Any]:
+        """
+        Pursue a previously discovered goal through the autonomous loop.
+
+        Marks the goal as pursued (dampening its future novelty), then runs
+        a bounded autonomous cycle against the goal with the autonomy gate
+        enabled, so each planned step is self-gated by calibrated confidence.
+        """
+        discoverer = self._get_goal_discoverer()
+        match = None
+        for g in discoverer._history:
+            if g.id == goal_id:
+                match = g
+                break
+        if match is None:
+            return {"error": "goal_not_found", "goal_id": goal_id}
+        discoverer.remember_pursued(match.title)
+        try:
+            import asyncio
+            coroutine = self.run_autonomous(
+                goal=match.title,
+                max_iterations=max_iterations,
+                self_refine=True,
+                autonomy_gate=True,
+            )
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            result = loop.run_until_complete(coroutine) if not loop.is_running() else None
+            return {"goal": match.to_dict(), "result": result}
+        except Exception as exc:
+            logger.warning("Pursue discovered goal failed: %s", exc)
+            return {"error": str(exc), "goal": match.to_dict()}
+
+    def _resolve_engine(self) -> Any:
+        """Resolve the active SparkEngine instance, if available."""
+        try:
+            from sparkai.engine.engine import SparkEngine
+            return SparkEngine.get_instance()
+        except Exception:
+            return None
+
+    # === World Stewardship Cycle ===
+
+    def _get_world_steward(self):
+        """Lazily resolve the shared world steward singleton."""
+        if self._world_steward is None:
+            from sparkai.agent.agent_world_steward import get_world_steward
+            self._world_steward = get_world_steward()
+        return self._world_steward
+
+    def run_stewardship_cycle(self, engine: Any = None) -> Dict[str, Any]:
+        """
+        Execute one full world stewardship cycle and return the audit report.
+
+        The cycle is the AI-native heartbeat: forecast the world, discover
+        goals, synthesize remediation candidates, reason counterfactually,
+        gate by calibrated confidence, commit the approved action, and
+        record calibration. Every phase is wrapped so a single phase
+        failure never aborts the whole cycle.
+
+        This is the capstone that fuses every proactive capability into
+        one self-directed pass. The agent tends the world without waiting
+        for instructions.
+        """
+        if engine is None:
+            engine = self._resolve_engine()
+        steward = self._get_world_steward()
+        report = steward.run_cycle(self, engine=engine)
+        try:
+            self.emit("stewardship_cycle", {
+                "outcome": report.outcome,
+                "goal": report.goal_title,
+                "committed": report.committed,
+                "autonomy": report.autonomy_level,
+            })
+        except Exception:
+            pass
+        return report.to_dict()
+
+    def get_stewardship_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Return recent stewardship cycle reports."""
+        return self._get_world_steward().get_history(limit=limit)
+
+    def preview_stewardship_candidates(self, engine: Any = None) -> Dict[str, Any]:
+        """
+        Preview the dynamic candidates the steward would synthesize for the
+        current world state, without running the full cycle.
+
+        Useful for the editor: the user can see what the agent would propose
+        before committing to a full stewardship pass.
+        """
+        if engine is None:
+            engine = self._resolve_engine()
+        if engine is None:
+            return {"error": "no_engine"}
+        # Discover the top goal to know which trigger to synthesize for.
+        goals = self.discover_goals(engine=engine, max_goals=1)
+        if not goals:
+            return {"trigger": "", "candidates": [], "message": "world is healthy"}
+        trigger = goals[0].get("trigger", "")
+        steward = self._get_world_steward()
+        candidates = steward._synthesize_dynamic(trigger, engine)
+        if not candidates:
+            candidates = list(steward._REMEDIATION.get(trigger, []))
+        return {
+            "trigger": trigger,
+            "goal_title": goals[0].get("title", ""),
+            "candidates": candidates,
+        }
+
+    # ------------------------------------------------------------------
+    # Dream Cycle — offline experience consolidation
+    # ------------------------------------------------------------------
+
+    def _get_dream_cycle(self):
+        """Lazily resolve the shared dream cycle singleton."""
+        if self._dream_cycle is None:
+            from sparkai.agent.agent_dream_cycle import get_dream_cycle
+            self._dream_cycle = get_dream_cycle()
+        return self._dream_cycle
+
+    def run_dream_cycle(self, engine: Any = None) -> Dict[str, Any]:
+        """
+        Execute one dream cycle — the offline consolidation phase.
+
+        The agent replays recent trajectories, refinements, emotions, and
+        stewardship outcomes, then synthesizes creative insights, skill
+        hypotheses, and strategy notes. Results are integrated back into
+        long-term memory, the skill accumulator, and the emotion system.
+
+        This is the generative counterpart to the reactive loop: instead of
+        responding to stimuli, the agent processes and recombines its
+        experiences to discover latent patterns.
+        """
+        if engine is None:
+            engine = self._resolve_engine()
+        dream = self._get_dream_cycle()
+        report = dream.dream(self, engine=engine)
+        try:
+            self.emit("dream_cycle", {
+                "status": report.status,
+                "insights": len(report.insights),
+                "skills_proposed": len(report.skill_hypotheses),
+            })
+        except Exception:
+            pass
+        return report.to_dict()
+
+    def get_dream_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Return recent dream reports."""
+        return self._get_dream_cycle().get_history(limit=limit)
+
+    def get_dream_statistics(self) -> Dict[str, Any]:
+        """Return aggregate dream statistics."""
+        return self._get_dream_cycle().get_statistics()
+
+    # ------------------------------------------------------------------
+    # Causal Atlas — cause-effect reasoning
+    # ------------------------------------------------------------------
+
+    def _get_causal_atlas(self):
+        """Lazily resolve the shared causal atlas singleton."""
+        if self._causal_atlas is None:
+            from sparkai.agent.agent_causal_atlas import get_causal_atlas
+            self._causal_atlas = get_causal_atlas()
+        return self._causal_atlas
+
+    def record_causal(
+        self,
+        cause_label: str,
+        effect_label: str,
+        cause_type: str = "action",
+        effect_type: str = "state_change",
+        entity_id: str = "",
+        scene_id: str = "",
+        confidence: float = 0.6,
+        context: str = "",
+    ) -> Dict[str, Any]:
+        """
+        Record a cause-effect relationship in the causal atlas.
+        """
+        atlas = self._get_causal_atlas()
+        cause_id, effect_id = atlas.record(
+            cause_label=cause_label,
+            effect_label=effect_label,
+            cause_type=cause_type,
+            effect_type=effect_type,
+            entity_id=entity_id,
+            scene_id=scene_id,
+            confidence=confidence,
+            context=context,
+        )
+        return {"cause_id": cause_id, "effect_id": effect_id}
+
+    def explain_causal(self, event_label: str, max_depth: int = 5) -> Dict[str, Any]:
+        """
+        Trace backward from an event to find its root causes.
+        """
+        atlas = self._get_causal_atlas()
+        chain = atlas.explain(event_label, max_depth=max_depth)
+        return chain.to_dict()
+
+    def predict_causal(self, action_label: str, max_depth: int = 5) -> Dict[str, Any]:
+        """
+        Trace forward from an action to predict its likely effects.
+        """
+        atlas = self._get_causal_atlas()
+        chain = atlas.predict(action_label, max_depth=max_depth)
+        return chain.to_dict()
+
+    def find_causal_path(self, from_label: str, to_label: str) -> Dict[str, Any]:
+        """
+        Find a causal chain connecting two events.
+        """
+        atlas = self._get_causal_atlas()
+        chain = atlas.find_path(from_label, to_label)
+        return chain.to_dict()
+
+    def get_causal_statistics(self) -> Dict[str, Any]:
+        """Return causal atlas statistics."""
+        return self._get_causal_atlas().get_statistics()
+
+    def get_causal_events(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """Return recent causal events."""
+        return self._get_causal_atlas().get_events(limit=limit)
 
     def _remember_commit(self, record) -> None:
         """Persist a committed action as episodic memory and a trajectory echo."""
