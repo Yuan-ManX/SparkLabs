@@ -9640,3 +9640,153 @@ async def performance_monitor_stats():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+
+# ============================================================
+# World Rules System Routes
+# ============================================================
+
+@router.get("/world-rules")
+async def world_rules_list():
+    """List all registered game-design rules."""
+    try:
+        from sparkai.engine.engine_world_rules import get_world_rules_system
+        system = get_world_rules_system()
+        return {"status": "ok", "rules": [r.to_dict() for r in system.get_rules()]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.post("/world-rules")
+async def world_rules_add(request: Request):
+    """Add a new game-design rule."""
+    try:
+        from sparkai.engine.engine_world_rules import get_world_rules_system
+        body = await request.json()
+        system = get_world_rules_system()
+        rule = system.add_rule(
+            name=body.get("name", ""),
+            rule_type=body.get("rule_type", ""),
+            params=body.get("params", {}),
+            severity=body.get("severity", "warning"),
+        )
+        return {"status": "ok", "rule": rule.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.delete("/world-rules/{rule_id}")
+async def world_rules_remove(rule_id: str):
+    """Remove a game-design rule by id."""
+    try:
+        from sparkai.engine.engine_world_rules import get_world_rules_system
+        system = get_world_rules_system()
+        removed = system.remove_rule(rule_id)
+        return {"status": "ok", "removed": removed}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.patch("/world-rules/{rule_id}")
+async def world_rules_toggle(rule_id: str, request: Request):
+    """Toggle or set the enabled state of a rule."""
+    try:
+        from sparkai.engine.engine_world_rules import get_world_rules_system
+        body = await request.json() if request.headers.get("content-type") else {}
+        system = get_world_rules_system()
+        enabled = body.get("enabled") if isinstance(body, dict) else None
+        updated = system.toggle_rule(rule_id, enabled=enabled)
+        return {"status": "ok", "updated": updated}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/world-rules/validate")
+async def world_rules_validate():
+    """Validate the live world against all enabled rules and return violations."""
+    try:
+        from sparkai.engine.engine import SparkEngine
+        engine = SparkEngine.get_instance()
+        violations = engine.validate_world_rules()
+        return {
+            "status": "ok",
+            "violations": [v.to_dict() for v in violations],
+            "total": len(violations),
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/world-rules/statistics")
+async def world_rules_statistics():
+    """Return world rules system statistics."""
+    try:
+        from sparkai.engine.engine_world_rules import get_world_rules_system
+        system = get_world_rules_system()
+        return {"status": "ok", "statistics": system.get_statistics()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ==================================================================
+# Scene Graph Spatial Queries
+# ==================================================================
+
+@router.post("/scene-graph/sync")
+async def scene_graph_sync():
+    """Sync the spatial index from all node world transforms."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        sg = get_scene_graph()
+        count = sg.sync_spatial_index()
+        return {"status": "ok", "indexed_nodes": count}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/scene-graph/query-radius")
+async def scene_graph_query_radius(x: float, y: float, radius: float):
+    """Return all nodes within radius of point (x, y)."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        sg = get_scene_graph()
+        nodes = sg.query_radius(x, y, radius)
+        return {"status": "ok", "nodes": nodes, "total": len(nodes)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/scene-graph/query-box")
+async def scene_graph_query_box(min_x: float, min_y: float, max_x: float, max_y: float):
+    """Return all nodes within a bounding box."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        sg = get_scene_graph()
+        nodes = sg.query_box(min_x, min_y, max_x, max_y)
+        return {"status": "ok", "nodes": nodes, "total": len(nodes)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/scene-graph/find-nearest")
+async def scene_graph_find_nearest(x: float, y: float, max_radius: float = 1000.0):
+    """Find the nearest node to a point."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        sg = get_scene_graph()
+        node = sg.find_nearest(x, y, max_radius=max_radius)
+        return {"status": "ok", "node": node}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/scene-graph/spatial-statistics")
+async def scene_graph_spatial_statistics():
+    """Return spatial index statistics."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        sg = get_scene_graph()
+        stats = sg.get_spatial_statistics()
+        return {"status": "ok", "statistics": stats}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
