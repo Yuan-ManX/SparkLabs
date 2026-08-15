@@ -624,3 +624,260 @@ async def agent_assess_autonomy(req: AutonomyRequest):
         return JSONResponse({"status": "success", "data": result})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+# === Proactive Autonomous Initiative ===
+
+class PursueGoalRequest(BaseModel):
+    max_iterations: int = 6
+    agent_name: str = "SparkAgent"
+
+
+@router.get("/systems/goals")
+async def agent_discover_goals(max_goals: int = 6, agent_name: str = "SparkAgent"):
+    """Observe the live world and return ranked candidate goals."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        goals = agent.discover_goals(max_goals=max_goals)
+        return JSONResponse({
+            "status": "success",
+            "data": {"goals": goals, "total": len(goals)},
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/goals/history")
+async def agent_goals_history(limit: int = 20, agent_name: str = "SparkAgent"):
+    """Return the recent goal-discovery history."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        discoverer = agent._get_goal_discoverer()
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "history": discoverer.get_history(limit=limit),
+                "statistics": discoverer.get_statistics(),
+            },
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/goals/{goal_id}/pursue")
+async def agent_pursue_goal(goal_id: str, req: PursueGoalRequest):
+    """Pursue a discovered goal through the autonomy-gated autonomous loop."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        result = agent.pursue_discovered_goal(
+            goal_id=goal_id,
+            max_iterations=req.max_iterations,
+        )
+        return JSONResponse({"status": "success", "data": result})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/forecast")
+async def agent_forecast_world(
+    horizon_frames: int = 60,
+    delta_time: float = 0.01667,
+    agent_name: str = "SparkAgent",
+):
+    """Project the live world forward and return a forecast summary."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        forecast = agent.forecast_world(
+            horizon_frames=horizon_frames,
+            delta_time=delta_time,
+        )
+        return JSONResponse({"status": "success", "data": forecast})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/forecast/history")
+async def agent_forecast_history(limit: int = 10, agent_name: str = "SparkAgent"):
+    """Return recent world-forecast history and statistics."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        forecaster = agent._get_world_forecaster()
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "history": forecaster.get_history(limit=limit),
+                "statistics": forecaster.get_statistics(),
+            },
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+# === World Stewardship Cycle ===
+
+@router.post("/systems/stewardship/run")
+async def agent_run_stewardship(agent_name: str = "SparkAgent"):
+    """Execute one full world stewardship cycle and return the audit report."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        report = agent.run_stewardship_cycle()
+        return JSONResponse({"status": "success", "data": report})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/stewardship/history")
+async def agent_stewardship_history(limit: int = 10, agent_name: str = "SparkAgent"):
+    """Return recent stewardship cycle reports and statistics."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        steward = agent._get_world_steward()
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "history": steward.get_history(limit=limit),
+                "statistics": steward.get_statistics(),
+            },
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/stewardship/candidates")
+async def agent_stewardship_candidates(agent_name: str = "SparkAgent"):
+    """Preview the dynamic candidates the steward would synthesize now."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        result = agent.preview_stewardship_candidates()
+        return JSONResponse({"status": "success", "data": result})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+# ==================================================================
+# Dream Cycle — offline experience consolidation
+# ==================================================================
+
+@router.post("/systems/dream/run")
+async def agent_dream_run(agent_name: str = "SparkAgent"):
+    """Execute one dream cycle and return the dream report."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        report = agent.run_dream_cycle()
+        return JSONResponse({"status": "success", "data": report})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/dream/history")
+async def agent_dream_history(limit: int = 10, agent_name: str = "SparkAgent"):
+    """Return recent dream reports."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        history = agent.get_dream_history(limit=limit)
+        return JSONResponse({"status": "success", "data": {"history": history, "total": len(history)}})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/dream/statistics")
+async def agent_dream_statistics(agent_name: str = "SparkAgent"):
+    """Return aggregate dream statistics."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        stats = agent.get_dream_statistics()
+        return JSONResponse({"status": "success", "data": stats})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+# ==================================================================
+# Causal Atlas — cause-effect reasoning
+# ==================================================================
+
+class CausalRecordRequest(BaseModel):
+    cause_label: str
+    effect_label: str
+    cause_type: str = "action"
+    effect_type: str = "state_change"
+    entity_id: str = ""
+    scene_id: str = ""
+    confidence: float = 0.6
+    context: str = ""
+
+
+@router.post("/systems/causal/record")
+async def agent_causal_record(req: CausalRecordRequest, agent_name: str = "SparkAgent"):
+    """Record a cause-effect relationship in the causal atlas."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        result = agent.record_causal(
+            cause_label=req.cause_label,
+            effect_label=req.effect_label,
+            cause_type=req.cause_type,
+            effect_type=req.effect_type,
+            entity_id=req.entity_id,
+            scene_id=req.scene_id,
+            confidence=req.confidence,
+            context=req.context,
+        )
+        return JSONResponse({"status": "success", "data": result})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/causal/explain")
+async def agent_causal_explain(event_label: str, max_depth: int = 5, agent_name: str = "SparkAgent"):
+    """Trace backward from an event to find its root causes."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        chain = agent.explain_causal(event_label, max_depth=max_depth)
+        return JSONResponse({"status": "success", "data": chain})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/causal/predict")
+async def agent_causal_predict(action_label: str, max_depth: int = 5, agent_name: str = "SparkAgent"):
+    """Trace forward from an action to predict its likely effects."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        chain = agent.predict_causal(action_label, max_depth=max_depth)
+        return JSONResponse({"status": "success", "data": chain})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/causal/path")
+async def agent_causal_path(from_label: str, to_label: str, agent_name: str = "SparkAgent"):
+    """Find a causal chain connecting two events."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        chain = agent.find_causal_path(from_label, to_label)
+        return JSONResponse({"status": "success", "data": chain})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/causal/statistics")
+async def agent_causal_statistics(agent_name: str = "SparkAgent"):
+    """Return causal atlas statistics."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        stats = agent.get_causal_statistics()
+        return JSONResponse({"status": "success", "data": stats})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/causal/events")
+async def agent_causal_events(limit: int = 50, agent_name: str = "SparkAgent"):
+    """Return recent causal events."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        events = agent.get_causal_events(limit=limit)
+        return JSONResponse({"status": "success", "data": {"events": events, "total": len(events)}})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
